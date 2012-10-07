@@ -1,0 +1,16 @@
+<module rename-to="blasius">
+
+
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="org.sgx.raphael4gwt.Raphael4Gwt" />
+    <inherits name='com.allen_sauer.gwt.voices.gwt-voices'/>
+
+    <set-property name="user.agent" value="safari"/>
+
+    <extend-property name='locale' values='en'/>
+    <set-property-fallback name='locale' value='en'/>
+    <set-property name='locale' value='en'/>
+
+
+    <entry-point class="hu.nooon.blasius.client.SiteEntryPoint"/>
+</module>
