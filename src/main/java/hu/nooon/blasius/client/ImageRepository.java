@@ -13,22 +13,10 @@ public class ImageRepository {
     private Set menuArchive, menuExhibitions, menuFinish, menuNew, menuOwners;
 
     private Paper paper;
-    private int tileWidth, tileHeight;
-    private int thumbWidth, thumbHeight;
-    private int landWidth, landHeight, portWidth, portHeight;
 
 
-    public ImageRepository(Paper paper, int tileWidth, int tileHeight, int thumbWidth, int thumbHeight,
-                           int landWidth, int landHeight, int portWidth, int portHeight) {
+    public ImageRepository(Paper paper) {
         this.paper = paper;
-        this.tileWidth = tileWidth;
-        this.tileHeight = tileHeight;
-        this.thumbWidth = thumbWidth;
-        this.thumbHeight = thumbHeight;
-        this.landWidth = landWidth;
-        this.landHeight = landHeight;
-        this.portWidth = portWidth;
-        this.portHeight = portHeight;
     }
 
     private Set addToRepository(Paper paper, ImageResource... resources) {

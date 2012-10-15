@@ -140,7 +140,7 @@ public class CustomGrid implements CustomLayer {
                         }
                     });
         } else {
-            shape.toBack().hide();
+            shape.stop().toBack().hide();
         }
     }
 }

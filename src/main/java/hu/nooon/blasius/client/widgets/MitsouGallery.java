@@ -67,7 +67,6 @@ public class MitsouGallery implements CustomLayer {
             thumbFrame.attr(Attrs.create().stroke("white").strokeWidth(3));
         }
 
-
         thumbnailSet.toFront();
         final int sumWidth = thumbWidth * thumbnails.size();
         final int maxDelta = sumWidth - width;
@@ -87,7 +86,6 @@ public class MitsouGallery implements CustomLayer {
     private Shape getImage(int index) {
 
         if (!images.containsKey(index)) {
-
             ImageResource img = imgs.get(index);
             Shape image = paper.image(img,
                     x + ((width - img.getWidth())/2),
@@ -132,6 +130,10 @@ public class MitsouGallery implements CustomLayer {
     @Override
     public CustomLayer show(boolean animated) {
         thumbnailSet.show().toFront();
+        thumbFrame.show().toFront();
+        Shape newImage = getImage(0);
+        showNewShape(actualImage, newImage);
+        actualImage = newImage;
         return this;
     }
 

@@ -13,14 +13,15 @@ import hu.nooon.blasius.client.event.AnimationEventHandler;
 import hu.nooon.blasius.client.resource.SiteClientBundle;
 import hu.nooon.blasius.client.widgets.*;
 import org.sgx.raphael4gwt.raphael.*;
-import org.sgx.raphael4gwt.raphael.Set;
 import org.sgx.raphael4gwt.raphael.base.Attrs;
 import org.sgx.raphael4gwt.raphael.base.Rectangle;
 import org.sgx.raphael4gwt.raphael.event.Callback;
 import org.sgx.raphael4gwt.raphael.event.HoverListener;
 import org.sgx.raphael4gwt.raphael.event.MouseEventListener;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 
 public class SiteEntryPoint implements EntryPoint {
@@ -30,20 +31,15 @@ public class SiteEntryPoint implements EntryPoint {
     private static final int tileHeight = 225;
     private static final int thumbWidth = 128;
     private static final int thumbHeight = 113;
-    private static final int landWidth = 1024;
-    private static final int landHeight = 675;
-    private static final int portWidth = 768;
-    private static final int portHeight = 900;
 
-
+    private static final int menuItemWidth = 180;
     private static final int titleHeight = 80;
+    private static final int headerHeight = 50;
     private static final int clientHeight = 4 * tileHeight;
 
     private static final int canvasWidth = 4 * tileWidth;
-    private static final int canvasHeight = titleHeight + clientHeight;
-
-    private static final double menuOpacity = .7;
-
+    private static final int canvasHeight = titleHeight + headerHeight + clientHeight;
+    private static final double menuOpacity = .4;
 
     private SiteClientBundle clientBundle = SiteClientBundle.INSTANCE;
 
@@ -51,12 +47,14 @@ public class SiteEntryPoint implements EntryPoint {
 
     private final Attrs titleTextAttrs =
             Attrs.create().fontFamily("Permanent Marker, cursive").fontSize(50).fill("black").textAnchor("start");
+    private final Attrs menuTextAttrs =
+            Attrs.create().fontFamily("Permanent Marker, cursive").fontSize(18).fill("black").textAnchor("start");
     private final Attrs bigMenuTextAttrs =
             Attrs.create().fontFamily("Permanent Marker, cursive").fontSize(60).fill("black").textAnchor("start");
 
 
     private Paper paper;
-    private CustomGrid clientGrid;
+    private CustomGrid clientGrid, menuGrid;
     private java.util.Set<Set> modifiedLayer, clonedLayer;
     private ImageRepository images;
     private SiteAudio audio;
@@ -92,6 +90,8 @@ public class SiteEntryPoint implements EntryPoint {
 
         createTitle();
 
+        createHeader();
+
         createClient();
 
         initResources();
@@ -107,7 +107,7 @@ public class SiteEntryPoint implements EntryPoint {
 
 
     private void initResources() {
-        images = new ImageRepository(paper, tileWidth, tileHeight, thumbWidth, thumbHeight, landWidth, landHeight, portWidth, portHeight);
+        images = new ImageRepository(paper);
 
 //        audio = new SiteAudio();
     }
@@ -144,7 +144,43 @@ public class SiteEntryPoint implements EntryPoint {
 
     }
 
-    private MitsouGallery newGallery, archiveGallery, finishGallery, exhibitionsGallery, ownersGallery, actualGallery;
+    private void createHeader() {
+
+
+        Rectangle headerRectangle = Raphael.createRectangle(0, titleHeight, canvasWidth, headerHeight);
+        Rect headerBkg = paper.rect(headerRectangle);
+        headerBkg.attr(Attrs.create().strokeWidth(0));
+
+        menuGrid = new CustomGrid(0, titleHeight, 1, 6, menuItemWidth, headerHeight, 20, 20);
+
+        FadedObject menuHome = new FadedObject(paper.text(0, 0, "Home").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(0, 0, menuHome.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuNewGuitars = new FadedObject(paper.text(0, 0, "New guitars").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(1, 0, menuNewGuitars.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuFinish = new FadedObject(paper.text(0, 0, "Finishing new series").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(2, 0, menuFinish.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuArchive = new FadedObject(paper.text(0, 0, "Archive").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(3, 0, menuArchive.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuExhibitions = new FadedObject(paper.text(0, 0, "Exhibitions").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(4, 0, menuExhibitions.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuOwners = new FadedObject(paper.text(0, 0, "Owners").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(5, 0, menuOwners.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+
+
+        menuHome.getShape().click(new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                homeScreen(false);
+            }
+        });
+        menuNewGuitars.getShape().click(getNewGalleryPage());
+        menuFinish.getShape().click(getFinishGalleryPage());
+        menuArchive.getShape().click(getArchiveGalleryPage());
+        menuExhibitions.getShape().click(getExhibitionsGalleryPage());
+        menuOwners.getShape().click(getOwnersGalleryPage());
+    }
+
+    private MitsouGallery newGallery, archiveGallery, finishGallery, exhibitionsGallery, ownersGallery;
 
     private MitsouGallery getArchiveGallery() {
         if (archiveGallery == null) {
@@ -153,7 +189,7 @@ public class SiteEntryPoint implements EntryPoint {
                             clientBundle.ar7(),clientBundle.ar8(),clientBundle.ar9(),clientBundle.ar10(),clientBundle.ar3()),
                     Arrays.asList(clientBundle.ar1(), clientBundle.ar2(), clientBundle.ar4(), clientBundle.ar5(), clientBundle.ar6(),
                             clientBundle.ar7(),clientBundle.ar8(),clientBundle.ar9(),clientBundle.ar10(),clientBundle.ar3()),
-                    0, titleHeight, tileWidth * 4, clientHeight,
+                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -167,7 +203,7 @@ public class SiteEntryPoint implements EntryPoint {
                             clientBundle.n6(),clientBundle.n7(),clientBundle.n8(),clientBundle.n9(),clientBundle.n10()),
                     Arrays.asList(clientBundle.n1(), clientBundle.n2(),clientBundle.n3(),clientBundle.n4(),clientBundle.n5(),
                             clientBundle.n6(),clientBundle.n7(),clientBundle.n8(),clientBundle.n9(),clientBundle.n10()),
-                    0, titleHeight, tileWidth * 4, clientHeight,
+                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -182,7 +218,7 @@ public class SiteEntryPoint implements EntryPoint {
                             clientBundle.f6(),clientBundle.f7(),clientBundle.f8(),clientBundle.f9(),clientBundle.f10()),
                     Arrays.asList(clientBundle.f1(), clientBundle.f2(),clientBundle.f3(),clientBundle.f4(),clientBundle.f5(),
                             clientBundle.f6(),clientBundle.f7(),clientBundle.f8(),clientBundle.f9(),clientBundle.f10()),
-                    0, titleHeight, tileWidth * 4, clientHeight,
+                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -191,46 +227,55 @@ public class SiteEntryPoint implements EntryPoint {
 
 
     private MitsouGallery getExhibitionsGallery() {
-        if (finishGallery == null) {
-            finishGallery = new MitsouGallery(paper,
+        if (exhibitionsGallery == null) {
+            exhibitionsGallery = new MitsouGallery(paper,
                     Arrays.asList(clientBundle.ex1(), clientBundle.ex2(),clientBundle.ex3(),clientBundle.ex4(),clientBundle.ex5(),
                             clientBundle.ex6(),clientBundle.ex7(),clientBundle.ex8(),clientBundle.ex9(),clientBundle.ex10()),
                     Arrays.asList(clientBundle.ex1(), clientBundle.ex2(),clientBundle.ex3(),clientBundle.ex4(),clientBundle.ex5(),
                             clientBundle.ex6(),clientBundle.ex7(),clientBundle.ex8(),clientBundle.ex9(),clientBundle.ex10()),
-                    0, titleHeight, tileWidth * 4, clientHeight,
+                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
-        return finishGallery;
+        return exhibitionsGallery;
     }
 
     private MitsouGallery getOwnersGallery() {
-        if (finishGallery == null) {
-            finishGallery = new MitsouGallery(paper,
+        if (ownersGallery == null) {
+            ownersGallery = new MitsouGallery(paper,
                     Arrays.asList(clientBundle.o1(), clientBundle.o2(),clientBundle.o3(),clientBundle.o4(),clientBundle.o5(),
                             clientBundle.o6(),clientBundle.o7(),clientBundle.o8(),clientBundle.o9(),clientBundle.o10()),
                     Arrays.asList(clientBundle.o1(), clientBundle.o2(),clientBundle.o3(),clientBundle.o4(),clientBundle.o5(),
                             clientBundle.o6(),clientBundle.o7(),clientBundle.o8(),clientBundle.o9(),clientBundle.o10()),
-                    0, titleHeight, tileWidth * 4, clientHeight,
+                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
-        return finishGallery;
+        return ownersGallery;
     }
 
 
     private void hideGallery() {
-        if (actualGallery != null) {
-            actualGallery.hide(true);
+        if (ownersGallery != null) {
+            ownersGallery.hide(true);
+        }
+        if (finishGallery != null) {
+            finishGallery.hide(true);
+        }
+        if (newGallery != null) {
+            newGallery.hide(true);
+        }
+        if (exhibitionsGallery != null) {
+            exhibitionsGallery.hide(true);
+        }
+        if (archiveGallery != null) {
+            archiveGallery.hide(true);
         }
     }
 
 
     private void createClient() {
-        Rectangle clientRectangle = Raphael.createRectangle(0, titleHeight, canvasWidth, clientHeight);
-        Rect clientBkg = paper.rect(clientRectangle);
-        clientBkg.attr(Attrs.create().strokeWidth(0));
-        clientGrid = new CustomGrid(0, titleHeight, 4, 4, tileWidth, tileHeight);
+        clientGrid = new CustomGrid(0, titleHeight + headerHeight, 4, 4, tileWidth, tileHeight);
     }
 
     private void homeScreen(boolean initial) {
@@ -265,9 +310,7 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                actualGallery = getArchiveGallery();
-                actualGallery.show(true);
-
+                getArchiveGallery().show(true);
             }
         };
     }
@@ -277,8 +320,7 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                actualGallery = getNewGallery();
-                actualGallery.show(true);
+                getNewGallery().show(true);
             }
         };
     }
@@ -288,8 +330,7 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                actualGallery = getFinishGallery();
-                actualGallery.show(true);
+                getFinishGallery().show(true);
             }
         };
     }
@@ -299,8 +340,7 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                actualGallery = getExhibitionsGallery();
-                actualGallery.show(true);
+                getExhibitionsGallery().show(true);
             }
         };
     }
@@ -310,8 +350,7 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                actualGallery = getOwnersGallery();
-                actualGallery.show(true);
+                getOwnersGallery().show(true);
             }
         };
     }
@@ -359,34 +398,22 @@ public class SiteEntryPoint implements EntryPoint {
     }
 
     private void disposeClonedLayer() {
-
-        if (clonedLayer != null) {
-            for (final Set obsolete : clonedLayer) {
-                obsolete.stop().animate(Raphael.animation(Attrs.create().opacity(0), 1000, Raphael.EASING_LINEAR, new Callback() {
-                    @Override
-                    public void call(Shape shape) {
-                        for (int i = 0; i < obsolete.size(); i++) {
-                            obsolete.item(i).remove();
-                        }
-                    }
-                }));
-            }
-            clonedLayer.clear();
+        for (final Set obsoleteShape : clonedLayer) {
+            obsoleteShape.remove();
         }
+        clonedLayer.clear();
     }
 
     private void disposeModifiedLayer() {
-        if (modifiedLayer != null) {
-            for (final Set obsolete : modifiedLayer) {
-                obsolete.stop().animate(Raphael.animation(Attrs.create().opacity(0), 1000, Raphael.EASING_LINEAR, new Callback() {
-                    @Override
-                    public void call(Shape shape) {
-                        obsolete.hide();
-                    }
-                }));
-            }
-            modifiedLayer.clear();
+        for (final Set obsolete : modifiedLayer) {
+            obsolete.stop().animate(Raphael.animation(Attrs.create().opacity(0), 1000, Raphael.EASING_LINEAR, new Callback() {
+                @Override
+                public void call(Shape shape) {
+                    obsolete.hide();
+                }
+            })).toBack();
         }
+        modifiedLayer.clear();
     }
 
 }
