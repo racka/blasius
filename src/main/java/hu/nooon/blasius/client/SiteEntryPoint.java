@@ -2,10 +2,7 @@ package hu.nooon.blasius.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.*;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import hu.nooon.blasius.client.event.AnimationEvent;
@@ -46,11 +43,11 @@ public class SiteEntryPoint implements EntryPoint {
     private final EventBus eventBus = GWT.create(SimpleEventBus.class);
 
     private final Attrs titleTextAttrs =
-            Attrs.create().fontFamily("Permanent Marker, cursive").fontSize(50).fill("black").textAnchor("start");
+            Attrs.create().fontFamily("Fascinate, cursive").fontSize(50).fill("black").textAnchor("start");
     private final Attrs menuTextAttrs =
-            Attrs.create().fontFamily("Permanent Marker, cursive").fontSize(18).fill("black").textAnchor("start");
+            Attrs.create().fontFamily("Fascinate, cursive").fontSize(16).fill("black").textAnchor("start");
     private final Attrs bigMenuTextAttrs =
-            Attrs.create().fontFamily("Permanent Marker, cursive").fontSize(60).fill("black").textAnchor("start");
+            Attrs.create().fontFamily("Fascinate, cursive").fontSize(50).fill("black").textAnchor("start");
 
 
     private Paper paper;
@@ -61,12 +58,22 @@ public class SiteEntryPoint implements EntryPoint {
 
     public void onModuleLoad() {
 
+        Element facebook = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
+        facebook.getStyle().setDisplay(Style.Display.NONE);
+        facebook.getStyle().setZIndex(10);
+        facebook.getStyle().setPosition(Style.Position.ABSOLUTE);
+        facebook.getStyle().setTop(titleHeight + headerHeight + 50, Style.Unit.PX);
+        facebook.getStyle().setLeft(0, Style.Unit.PX);
+
         Document.get().getBody().getStyle().setMargin(0, Style.Unit.PX);
         Document.get().getBody().getStyle().setBackgroundImage("url(" + clientBundle.background().getSafeUri().asString() + ")");
         DivElement divElement = Document.get().createDivElement();
         Document.get().getBody().appendChild(divElement);
+        divElement.getStyle().setZIndex(5);
         divElement.getStyle().setWidth(canvasWidth, Style.Unit.PX);
-        divElement.getStyle().setProperty("margin", "0px auto");
+        divElement.getStyle().setPosition(Style.Position.ABSOLUTE);
+        divElement.getStyle().setLeft(0, Style.Unit.PX);
+        divElement.getStyle().setTop(0, Style.Unit.PX);
 
         eventBus.addHandler(AnimationEvent.TYPE, new AnimationEventHandler() {
             @Override
@@ -151,20 +158,25 @@ public class SiteEntryPoint implements EntryPoint {
         Rect headerBkg = paper.rect(headerRectangle);
         headerBkg.attr(Attrs.create().strokeWidth(0));
 
-        menuGrid = new CustomGrid(0, titleHeight, 1, 6, menuItemWidth, headerHeight, 20, 20);
+        menuGrid = new CustomGrid(0, titleHeight, 1, 7, menuItemWidth, headerHeight, 20, 20);
 
         FadedObject menuHome = new FadedObject(paper.text(0, 0, "Home").attr(menuTextAttrs), menuOpacity);
         menuGrid.putShapeToGrid(0, 0, menuHome.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+
+        FadedObject menuNews = new FadedObject(paper.text(0, 0, "News").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(1, 0, menuNews.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+
+
         FadedObject menuNewGuitars = new FadedObject(paper.text(0, 0, "New guitars").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(1, 0, menuNewGuitars.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        menuGrid.putShapeToGrid(2, 0, menuNewGuitars.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuFinish = new FadedObject(paper.text(0, 0, "Finishing new series").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(2, 0, menuFinish.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        menuGrid.putShapeToGrid(3, 0, menuFinish.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuArchive = new FadedObject(paper.text(0, 0, "Archive").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(3, 0, menuArchive.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        menuGrid.putShapeToGrid(4, 0, menuArchive.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuExhibitions = new FadedObject(paper.text(0, 0, "Exhibitions").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(4, 0, menuExhibitions.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        menuGrid.putShapeToGrid(5, 0, menuExhibitions.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuOwners = new FadedObject(paper.text(0, 0, "Owners").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(5, 0, menuOwners.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        menuGrid.putShapeToGrid(6, 0, menuOwners.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
 
 
         menuHome.getShape().click(new MouseEventListener() {
@@ -173,6 +185,7 @@ public class SiteEntryPoint implements EntryPoint {
                 homeScreen(false);
             }
         });
+        menuNews.getShape().click(getNewsPage());
         menuNewGuitars.getShape().click(getNewGalleryPage());
         menuFinish.getShape().click(getFinishGalleryPage());
         menuArchive.getShape().click(getArchiveGalleryPage());
@@ -273,7 +286,6 @@ public class SiteEntryPoint implements EntryPoint {
         }
     }
 
-
     private void createClient() {
         clientGrid = new CustomGrid(0, titleHeight + headerHeight, 4, 4, tileWidth, tileHeight);
     }
@@ -355,6 +367,24 @@ public class SiteEntryPoint implements EntryPoint {
         };
     }
 
+    private MouseEventListener getNewsPage() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+
+                Rect bkg = paper.rect(0, headerHeight + titleHeight, tileWidth * 4, tileHeight * 4);
+                bkg.attr(Attrs.create().fill("white").opacity(.4).strokeWidth(0));
+                clonedLayer.add(paper.set().push(bkg));
+
+                Element facebook = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
+                facebook.getStyle().setDisplay(Style.Display.BLOCK);
+                facebook.getStyle().setZIndex(100);
+            }
+        };
+    }
+
+
     private AlteratingProxyShape bigMenu(Set menu, String text) {
 
         Shape txt = paper.text((int) menu.getBBox().getX() + 10, (int) menu.getBBox().getY() + 50, text)
@@ -389,6 +419,7 @@ public class SiteEntryPoint implements EntryPoint {
         clientGrid.clear();
         cleanLayers();
         hideGallery();
+        hideFaceBook();
     }
 
 
@@ -415,5 +446,11 @@ public class SiteEntryPoint implements EntryPoint {
         }
         modifiedLayer.clear();
     }
+
+    private void hideFaceBook() {
+        Element facebook = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
+        facebook.getStyle().setDisplay(Style.Display.NONE);
+    }
+
 
 }
