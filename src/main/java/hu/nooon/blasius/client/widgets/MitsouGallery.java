@@ -2,10 +2,7 @@ package hu.nooon.blasius.client.widgets;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.resources.client.ImageResource;
-import org.sgx.raphael4gwt.raphael.Paper;
-import org.sgx.raphael4gwt.raphael.Raphael;
-import org.sgx.raphael4gwt.raphael.Set;
-import org.sgx.raphael4gwt.raphael.Shape;
+import org.sgx.raphael4gwt.raphael.*;
 import org.sgx.raphael4gwt.raphael.base.Attrs;
 import org.sgx.raphael4gwt.raphael.event.Callback;
 import org.sgx.raphael4gwt.raphael.event.MouseEventListener;
@@ -40,7 +37,7 @@ public class MitsouGallery implements CustomLayer {
         this.images = new HashMap<Integer, Shape>();
         this.thumbnailSet = paper.set();
         this.thumbnails = new ArrayList<FadedObject>();
-        int thumbY = (2 * height) / 3;
+        int thumbY = (3 * height) / 5;
 
         int count = 0;
         for (ImageResource thumb : thumbnails) {
@@ -88,14 +85,16 @@ public class MitsouGallery implements CustomLayer {
         if (!images.containsKey(index)) {
             ImageResource img = imgs.get(index);
             Shape image = paper.image(img,
-                    x + ((width - img.getWidth())/2),
-                    y, // + ((height - img.getHeight())/2),
-                    img.getWidth(), img.getHeight());
+                    x + ((width - img.getWidth())/2), y, img.getWidth(), img.getHeight());
             image.attr(Attrs.create().opacity(0)).hide();
             images.put(index, image);
         }
 
-        return images.get(index);
+
+        Image img = (Image)images.get(index);
+        Shape frame = paper.rect(x + ((width - img.getBBox().getWidth())/2), y, img.getBBox().getWidth(), img.getBBox().getHeight());
+        frame.attr(Attrs.create().stroke("black").strokeWidth(5));
+        return paper.set().push(img).push(frame);
     }
 
     private void showNewShape(final Shape obsoleteShape, final Shape actualShape) {

@@ -10,8 +10,13 @@ public interface SiteClientBundle extends ClientBundle {
 
     public static final SiteClientBundle INSTANCE =  GWT.create(SiteClientBundle.class);
 
-    @Source("hu/nooon/blasius/public/images/background/background1.jpg")
+    @ImageResource.ImageOptions(repeatStyle = ImageResource.RepeatStyle.None)
+    @Source("hu/nooon/blasius/public/images/background/background.jpg")
     public ImageResource background();
+
+    @Source("hu/nooon/blasius/public/images/facebook_bkg.jpg")
+    public ImageResource facebook();
+
 
 
     @Source("hu/nooon/blasius/public/images/archive/cover/archive_cover.jpg") // 512x225

@@ -3,6 +3,7 @@ package hu.nooon.blasius.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.*;
+import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import hu.nooon.blasius.client.event.AnimationEvent;
@@ -24,7 +25,7 @@ import java.util.List;
 public class SiteEntryPoint implements EntryPoint {
 
 
-    private static final int tileWidth = 256;
+    private static final int tileWidth = 204;
     private static final int tileHeight = 225;
     private static final int thumbWidth = 128;
     private static final int thumbHeight = 113;
@@ -34,7 +35,7 @@ public class SiteEntryPoint implements EntryPoint {
     private static final int headerHeight = 50;
     private static final int clientHeight = 4 * tileHeight;
 
-    private static final int canvasWidth = 4 * tileWidth;
+    private static final int canvasWidth = 5 * tileWidth;
     private static final int canvasHeight = titleHeight + headerHeight + clientHeight;
     private static final double menuOpacity = .4;
 
@@ -42,12 +43,17 @@ public class SiteEntryPoint implements EntryPoint {
 
     private final EventBus eventBus = GWT.create(SimpleEventBus.class);
 
+    //font-family: 'Playfair Display', serif;
+    //font-family: 'Stoke', serif;
+    //font-family: 'Adamina', serif;
+
+
     private final Attrs titleTextAttrs =
-            Attrs.create().fontFamily("Fascinate, cursive").fontSize(50).fill("black").textAnchor("start");
+            Attrs.create().fontFamily("Chau Philomene One, sans-serif").fontSize(50).fill("white").textAnchor("start");
     private final Attrs menuTextAttrs =
-            Attrs.create().fontFamily("Fascinate, cursive").fontSize(16).fill("black").textAnchor("start");
+            Attrs.create().fontFamily("Playfair Display, cursive").fontSize(16).fill("black").textAnchor("start");
     private final Attrs bigMenuTextAttrs =
-            Attrs.create().fontFamily("Fascinate, cursive").fontSize(50).fill("black").textAnchor("start");
+            Attrs.create().fontFamily("Chau Philomene One, sans-serif").fontSize(50).fill("white").textAnchor("start");
 
 
     private Paper paper;
@@ -63,7 +69,7 @@ public class SiteEntryPoint implements EntryPoint {
         facebook.getStyle().setZIndex(10);
         facebook.getStyle().setPosition(Style.Position.ABSOLUTE);
         facebook.getStyle().setTop(titleHeight + headerHeight + 50, Style.Unit.PX);
-        facebook.getStyle().setLeft(0, Style.Unit.PX);
+        facebook.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
 
         Document.get().getBody().getStyle().setMargin(0, Style.Unit.PX);
         Document.get().getBody().getStyle().setBackgroundImage("url(" + clientBundle.background().getSafeUri().asString() + ")");
@@ -72,7 +78,7 @@ public class SiteEntryPoint implements EntryPoint {
         divElement.getStyle().setZIndex(5);
         divElement.getStyle().setWidth(canvasWidth, Style.Unit.PX);
         divElement.getStyle().setPosition(Style.Position.ABSOLUTE);
-        divElement.getStyle().setLeft(0, Style.Unit.PX);
+        divElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
         divElement.getStyle().setTop(0, Style.Unit.PX);
 
         eventBus.addHandler(AnimationEvent.TYPE, new AnimationEventHandler() {
@@ -141,7 +147,7 @@ public class SiteEntryPoint implements EntryPoint {
 
     private void createTitle() {
 
-        Shape title = paper.text(150, 30, "Blasius Guitars and Basses").attr(titleTextAttrs);
+        Shape title = paper.text(250, 30, "Blasius Guitars and Basses").attr(titleTextAttrs);
         title.click(new MouseEventListener() {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
@@ -154,9 +160,9 @@ public class SiteEntryPoint implements EntryPoint {
     private void createHeader() {
 
 
-        Rectangle headerRectangle = Raphael.createRectangle(0, titleHeight, canvasWidth, headerHeight);
+        Rectangle headerRectangle = Raphael.createRectangle(0, titleHeight, canvasWidth, headerHeight - 15);
         Rect headerBkg = paper.rect(headerRectangle);
-        headerBkg.attr(Attrs.create().strokeWidth(0));
+        headerBkg.attr(Attrs.create().stroke("black").strokeWidth(3).fill("white").opacity(.7));
 
         menuGrid = new CustomGrid(0, titleHeight, 1, 7, menuItemWidth, headerHeight, 20, 20);
 
@@ -169,7 +175,7 @@ public class SiteEntryPoint implements EntryPoint {
 
         FadedObject menuNewGuitars = new FadedObject(paper.text(0, 0, "New guitars").attr(menuTextAttrs), menuOpacity);
         menuGrid.putShapeToGrid(2, 0, menuNewGuitars.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-        FadedObject menuFinish = new FadedObject(paper.text(0, 0, "Finishing new series").attr(menuTextAttrs), menuOpacity);
+        FadedObject menuFinish = new FadedObject(paper.text(0, 0, "Finishing").attr(menuTextAttrs), menuOpacity);
         menuGrid.putShapeToGrid(3, 0, menuFinish.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuArchive = new FadedObject(paper.text(0, 0, "Archive").attr(menuTextAttrs), menuOpacity);
         menuGrid.putShapeToGrid(4, 0, menuArchive.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
@@ -199,10 +205,10 @@ public class SiteEntryPoint implements EntryPoint {
         if (archiveGallery == null) {
             archiveGallery = new MitsouGallery(paper,
                     Arrays.asList(clientBundle.ar1(), clientBundle.ar2(), clientBundle.ar4(), clientBundle.ar5(), clientBundle.ar6(),
-                            clientBundle.ar7(),clientBundle.ar8(),clientBundle.ar9(),clientBundle.ar10(),clientBundle.ar3()),
+                            clientBundle.ar7(), clientBundle.ar8(), clientBundle.ar9(), clientBundle.ar10(), clientBundle.ar3()),
                     Arrays.asList(clientBundle.ar1(), clientBundle.ar2(), clientBundle.ar4(), clientBundle.ar5(), clientBundle.ar6(),
-                            clientBundle.ar7(),clientBundle.ar8(),clientBundle.ar9(),clientBundle.ar10(),clientBundle.ar3()),
-                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
+                            clientBundle.ar7(), clientBundle.ar8(), clientBundle.ar9(), clientBundle.ar10(), clientBundle.ar3()),
+                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -212,11 +218,11 @@ public class SiteEntryPoint implements EntryPoint {
     private MitsouGallery getNewGallery() {
         if (newGallery == null) {
             newGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.n1(), clientBundle.n2(),clientBundle.n3(),clientBundle.n4(),clientBundle.n5(),
-                            clientBundle.n6(),clientBundle.n7(),clientBundle.n8(),clientBundle.n9(),clientBundle.n10()),
-                    Arrays.asList(clientBundle.n1(), clientBundle.n2(),clientBundle.n3(),clientBundle.n4(),clientBundle.n5(),
-                            clientBundle.n6(),clientBundle.n7(),clientBundle.n8(),clientBundle.n9(),clientBundle.n10()),
-                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
+                    Arrays.asList(clientBundle.n1(), clientBundle.n2(), clientBundle.n3(), clientBundle.n4(), clientBundle.n5(),
+                            clientBundle.n6(), clientBundle.n7(), clientBundle.n8(), clientBundle.n9(), clientBundle.n10()),
+                    Arrays.asList(clientBundle.n1(), clientBundle.n2(), clientBundle.n3(), clientBundle.n4(), clientBundle.n5(),
+                            clientBundle.n6(), clientBundle.n7(), clientBundle.n8(), clientBundle.n9(), clientBundle.n10()),
+                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -227,11 +233,11 @@ public class SiteEntryPoint implements EntryPoint {
     private MitsouGallery getFinishGallery() {
         if (finishGallery == null) {
             finishGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.f1(), clientBundle.f2(),clientBundle.f3(),clientBundle.f4(),clientBundle.f5(),
-                            clientBundle.f6(),clientBundle.f7(),clientBundle.f8(),clientBundle.f9(),clientBundle.f10()),
-                    Arrays.asList(clientBundle.f1(), clientBundle.f2(),clientBundle.f3(),clientBundle.f4(),clientBundle.f5(),
-                            clientBundle.f6(),clientBundle.f7(),clientBundle.f8(),clientBundle.f9(),clientBundle.f10()),
-                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
+                    Arrays.asList(clientBundle.f1(), clientBundle.f2(), clientBundle.f3(), clientBundle.f4(), clientBundle.f5(),
+                            clientBundle.f6(), clientBundle.f7(), clientBundle.f8(), clientBundle.f9(), clientBundle.f10()),
+                    Arrays.asList(clientBundle.f1(), clientBundle.f2(), clientBundle.f3(), clientBundle.f4(), clientBundle.f5(),
+                            clientBundle.f6(), clientBundle.f7(), clientBundle.f8(), clientBundle.f9(), clientBundle.f10()),
+                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -242,11 +248,11 @@ public class SiteEntryPoint implements EntryPoint {
     private MitsouGallery getExhibitionsGallery() {
         if (exhibitionsGallery == null) {
             exhibitionsGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.ex1(), clientBundle.ex2(),clientBundle.ex3(),clientBundle.ex4(),clientBundle.ex5(),
-                            clientBundle.ex6(),clientBundle.ex7(),clientBundle.ex8(),clientBundle.ex9(),clientBundle.ex10()),
-                    Arrays.asList(clientBundle.ex1(), clientBundle.ex2(),clientBundle.ex3(),clientBundle.ex4(),clientBundle.ex5(),
-                            clientBundle.ex6(),clientBundle.ex7(),clientBundle.ex8(),clientBundle.ex9(),clientBundle.ex10()),
-                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
+                    Arrays.asList(clientBundle.ex1(), clientBundle.ex2(), clientBundle.ex3(), clientBundle.ex4(), clientBundle.ex5(),
+                            clientBundle.ex6(), clientBundle.ex7(), clientBundle.ex8(), clientBundle.ex9(), clientBundle.ex10()),
+                    Arrays.asList(clientBundle.ex1(), clientBundle.ex2(), clientBundle.ex3(), clientBundle.ex4(), clientBundle.ex5(),
+                            clientBundle.ex6(), clientBundle.ex7(), clientBundle.ex8(), clientBundle.ex9(), clientBundle.ex10()),
+                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -256,11 +262,11 @@ public class SiteEntryPoint implements EntryPoint {
     private MitsouGallery getOwnersGallery() {
         if (ownersGallery == null) {
             ownersGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.o1(), clientBundle.o2(),clientBundle.o3(),clientBundle.o4(),clientBundle.o5(),
-                            clientBundle.o6(),clientBundle.o7(),clientBundle.o8(),clientBundle.o9(),clientBundle.o10()),
-                    Arrays.asList(clientBundle.o1(), clientBundle.o2(),clientBundle.o3(),clientBundle.o4(),clientBundle.o5(),
-                            clientBundle.o6(),clientBundle.o7(),clientBundle.o8(),clientBundle.o9(),clientBundle.o10()),
-                    0, titleHeight + headerHeight, tileWidth * 4, clientHeight,
+                    Arrays.asList(clientBundle.o1(), clientBundle.o2(), clientBundle.o3(), clientBundle.o4(), clientBundle.o5(),
+                            clientBundle.o6(), clientBundle.o7(), clientBundle.o8(), clientBundle.o9(), clientBundle.o10()),
+                    Arrays.asList(clientBundle.o1(), clientBundle.o2(), clientBundle.o3(), clientBundle.o4(), clientBundle.o5(),
+                            clientBundle.o6(), clientBundle.o7(), clientBundle.o8(), clientBundle.o9(), clientBundle.o10()),
+                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
                     thumbWidth, thumbHeight);
 
         }
@@ -287,33 +293,45 @@ public class SiteEntryPoint implements EntryPoint {
     }
 
     private void createClient() {
-        clientGrid = new CustomGrid(0, titleHeight + headerHeight, 4, 4, tileWidth, tileHeight);
+        clientGrid = new CustomGrid(0, titleHeight + headerHeight, 2, 5, tileWidth, tileHeight);
     }
 
     private void homeScreen(boolean initial) {
 
         clearScreen();
 
-        clientGrid.putShapeToGrid(0, 0, images.getMenuNew());
-        clientGrid.putShapeToGrid(0, 2, images.getMenuFinish());
-        clientGrid.putShapeToGrid(2, 0, images.getMenuArchive());
-        clientGrid.putShapeToGrid(2, 1, images.getMenuExhibitions());
-        clientGrid.putShapeToGrid(2, 2, images.getMenuOwners());
+        Shape facebook = paper.image(clientBundle.facebook(), 0, 0, clientBundle.facebook().getWidth(), clientBundle.facebook().getHeight());
+        Set facebookBigMenu = paper.set().push(facebook);
+        clientGrid.putShapeToGrid(0, 0, facebookBigMenu);
 
-        bigMenu(images.getMenuNew(), "New guitars").flip(true);
-        bigMenu(images.getMenuFinish(), "Finishing new series").flip(true);
+
+        clientGrid.putShapeToGrid(0, 1, images.getMenuArchive());
+        clientGrid.putShapeToGrid(1, 1, images.getMenuExhibitions());
+        clientGrid.putShapeToGrid(2, 1, images.getMenuFinish());
+        clientGrid.putShapeToGrid(3, 1, images.getMenuNew());
+        clientGrid.putShapeToGrid(4, 1, images.getMenuOwners());
+
+        bigMenu(facebookBigMenu, "Visit Blasius on facebook!").flip(true);
         bigMenu(images.getMenuArchive(), "Archive").flip(true);
         bigMenu(images.getMenuExhibitions(), "Exhibitions").flip(true);
+        bigMenu(images.getMenuFinish(), "Finishing new series").flip(true);
+        bigMenu(images.getMenuNew(), "New guitars").flip(true);
         bigMenu(images.getMenuOwners(), "Owners").flip(true);
 
         if (initial) {
+            facebook.click(new MouseEventListener() {
+                @Override
+                public void notifyMouseEvent(NativeEvent nativeEvent) {
+                    Window.open("http://www.facebook.com/BlasiusGuitarsandBasses", "_blank", "");
+                }
+            });
+
+            images.getMenuArchive().click(getArchiveGalleryPage());
+            images.getMenuExhibitions().click(getExhibitionsGalleryPage());
             images.getMenuNew().click(getNewGalleryPage());
             images.getMenuFinish().click(getFinishGalleryPage());
-            images.getMenuExhibitions().click(getExhibitionsGalleryPage());
-            images.getMenuArchive().click(getArchiveGalleryPage());
             images.getMenuOwners().click(getOwnersGalleryPage());
         }
-
 
     }
 
@@ -373,8 +391,8 @@ public class SiteEntryPoint implements EntryPoint {
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
 
-                Rect bkg = paper.rect(0, headerHeight + titleHeight, tileWidth * 4, tileHeight * 4);
-                bkg.attr(Attrs.create().fill("white").opacity(.4).strokeWidth(0));
+                Rect bkg = paper.rect(0, headerHeight + titleHeight, canvasWidth, clientHeight);
+                bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
                 clonedLayer.add(paper.set().push(bkg));
 
                 Element facebook = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
@@ -393,7 +411,7 @@ public class SiteEntryPoint implements EntryPoint {
 
         final AlteratingProxyShape proxy = new AlteratingProxyShape(inner,
                 Arrays.asList(Attrs.create().opacity(1), Attrs.create().opacity(0)),
-                Arrays.asList(Attrs.create().opacity(.5), Attrs.create().opacity(1)), 200);
+                Arrays.asList(Attrs.create().opacity(.6), Attrs.create().opacity(1)), 200);
         inner.hover(new HoverListener() {
             @Override
             public void hoverIn(NativeEvent nativeEvent) {
