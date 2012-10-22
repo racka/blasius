@@ -21,28 +21,27 @@ public class MitsouGallery implements CustomLayer {
     private Map<Integer, Shape> images;
     private Shape actualImage;
     private Shape thumbFrame;
-    private int x, y, width, height;
+    private int x, y, width;
 
     public MitsouGallery(Paper paper, List<ImageResource> imgs, List<ImageResource> thumbnails,
-                         final int x, final int y, final int width, final int height,
+                         final int x, final int y, final int width, int height,
                          final int thumbWidth, int thumbHeight) {
 
         this.paper = paper;
         this.x = x;
         this.y = y;
         this.width = width;
-        this.height = height;
 
         this.imgs = imgs;
         this.images = new HashMap<Integer, Shape>();
         this.thumbnailSet = paper.set();
         this.thumbnails = new ArrayList<FadedObject>();
-        int thumbY = (3 * height) / 5;
+        int thumbY = y;
 
         int count = 0;
         for (ImageResource thumb : thumbnails) {
             Shape thumbImage = paper.image(thumb, x + count * thumbWidth, thumbY, thumbWidth, thumbHeight);
-            FadedObject thumbnail = new FadedObject(thumbImage, .3);
+            FadedObject thumbnail = new FadedObject(thumbImage, .1);
             this.thumbnails.add(thumbnail);
             this.thumbnailSet.push(thumbImage);
 
@@ -61,23 +60,26 @@ public class MitsouGallery implements CustomLayer {
 
         if (count > 0) {
             thumbFrame = paper.rect(x, thumbY, width, thumbHeight);
-            thumbFrame.attr(Attrs.create().stroke("white").strokeWidth(3));
+            thumbFrame.attr(Attrs.create().stroke("white").strokeWidth(3).opacity(.2));
         }
 
         thumbnailSet.toFront();
         final int sumWidth = thumbWidth * thumbnails.size();
         final int maxDelta = sumWidth - width;
-        this.thumbnailSet.mouseMove(new MouseEventListener() {
-            @Override
-            public void notifyMouseEvent(NativeEvent nativeEvent) {
-                int deltaX = (int) Math.floor(maxDelta * ((double) (nativeEvent.getClientX() - x) / (double) (width)));
+        if (maxDelta > 0) {
 
-                for (int i = 0; i < thumbnailSet.size(); i++) {
-                    thumbnailSet.item(i).attr(Attrs.create().x(x - deltaX + i * thumbWidth));
+            this.thumbnailSet.mouseMove(new MouseEventListener() {
+                @Override
+                public void notifyMouseEvent(NativeEvent nativeEvent) {
+                    int deltaX = (int) Math.floor(maxDelta * ((double) (nativeEvent.getClientX() - x) / (double) (width)));
+
+                    for (int i = 0; i < thumbnailSet.size(); i++) {
+                        thumbnailSet.item(i).attr(Attrs.create().x(x - deltaX + i * thumbWidth));
+                    }
+
                 }
-
-            }
-        });
+            });
+        }
     }
 
     private Shape getImage(int index) {

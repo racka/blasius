@@ -30,13 +30,14 @@ public class SiteEntryPoint implements EntryPoint {
     private static final int thumbWidth = 128;
     private static final int thumbHeight = 113;
 
-    private static final int menuItemWidth = 180;
+    private static final int menuItemWidth = 200;
     private static final int titleHeight = 80;
     private static final int headerHeight = 50;
-    private static final int clientHeight = 4 * tileHeight;
+    private static final int clientHeight = tileHeight;
 
+    private static final int facebookFeedY = titleHeight + headerHeight + tileHeight + 50;
     private static final int canvasWidth = 5 * tileWidth;
-    private static final int canvasHeight = titleHeight + headerHeight + clientHeight;
+    private static final int canvasHeight = facebookFeedY + 558;
     private static final double menuOpacity = .4;
 
     private SiteClientBundle clientBundle = SiteClientBundle.INSTANCE;
@@ -52,6 +53,9 @@ public class SiteEntryPoint implements EntryPoint {
             Attrs.create().fontFamily("Chau Philomene One, sans-serif").fontSize(50).fill("white").textAnchor("start");
     private final Attrs menuTextAttrs =
             Attrs.create().fontFamily("Playfair Display, cursive").fontSize(16).fill("black").textAnchor("start");
+    private final Attrs clientTextAttrs =
+            Attrs.create().fontFamily("Adamina, serif").fontSize(16).fill("white").textAnchor("start");
+
     private final Attrs bigMenuTextAttrs =
             Attrs.create().fontFamily("Chau Philomene One, sans-serif").fontSize(50).fill("white").textAnchor("start");
 
@@ -63,13 +67,6 @@ public class SiteEntryPoint implements EntryPoint {
     private SiteAudio audio;
 
     public void onModuleLoad() {
-
-        Element facebook = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
-        facebook.getStyle().setDisplay(Style.Display.NONE);
-        facebook.getStyle().setZIndex(10);
-        facebook.getStyle().setPosition(Style.Position.ABSOLUTE);
-        facebook.getStyle().setTop(titleHeight + headerHeight + 50, Style.Unit.PX);
-        facebook.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
 
         Document.get().getBody().getStyle().setMargin(0, Style.Unit.PX);
         Document.get().getBody().getStyle().setBackgroundImage("url(" + clientBundle.background().getSafeUri().asString() + ")");
@@ -164,25 +161,18 @@ public class SiteEntryPoint implements EntryPoint {
         Rect headerBkg = paper.rect(headerRectangle);
         headerBkg.attr(Attrs.create().stroke("black").strokeWidth(3).fill("white").opacity(.7));
 
-        menuGrid = new CustomGrid(0, titleHeight, 1, 7, menuItemWidth, headerHeight, 20, 20);
+        menuGrid = new CustomGrid(0, titleHeight, 1, 5, menuItemWidth, headerHeight, 20, 20);
 
         FadedObject menuHome = new FadedObject(paper.text(0, 0, "Home").attr(menuTextAttrs), menuOpacity);
         menuGrid.putShapeToGrid(0, 0, menuHome.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-
-        FadedObject menuNews = new FadedObject(paper.text(0, 0, "News").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(1, 0, menuNews.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-
-
-        FadedObject menuNewGuitars = new FadedObject(paper.text(0, 0, "New guitars").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(2, 0, menuNewGuitars.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-        FadedObject menuFinish = new FadedObject(paper.text(0, 0, "Finishing").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(3, 0, menuFinish.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-        FadedObject menuArchive = new FadedObject(paper.text(0, 0, "Archive").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(4, 0, menuArchive.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-        FadedObject menuExhibitions = new FadedObject(paper.text(0, 0, "Exhibitions").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(5, 0, menuExhibitions.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-        FadedObject menuOwners = new FadedObject(paper.text(0, 0, "Owners").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(6, 0, menuOwners.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuAbout = new FadedObject(paper.text(0, 0, "About us").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(1, 0, menuAbout.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuVideo = new FadedObject(paper.text(0, 0, "Video").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(2, 0, menuVideo.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuContact = new FadedObject(paper.text(0, 0, "Contact").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(3, 0, menuContact.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuOrder = new FadedObject(paper.text(0, 0, "Order").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(4, 0, menuOrder.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
 
 
         menuHome.getShape().click(new MouseEventListener() {
@@ -191,12 +181,10 @@ public class SiteEntryPoint implements EntryPoint {
                 homeScreen(false);
             }
         });
-        menuNews.getShape().click(getNewsPage());
-        menuNewGuitars.getShape().click(getNewGalleryPage());
-        menuFinish.getShape().click(getFinishGalleryPage());
-        menuArchive.getShape().click(getArchiveGalleryPage());
-        menuExhibitions.getShape().click(getExhibitionsGalleryPage());
-        menuOwners.getShape().click(getOwnersGalleryPage());
+        menuAbout.getShape().click(getAboutPage());
+//        menuVideo.getShape().click(getVideoPage());
+//        menuContact.getShape().click(getContactPage());
+//        menuOrder.getShape().click(getOrderPage());
     }
 
     private MitsouGallery newGallery, archiveGallery, finishGallery, exhibitionsGallery, ownersGallery;
@@ -208,7 +196,7 @@ public class SiteEntryPoint implements EntryPoint {
                             clientBundle.ar7(), clientBundle.ar8(), clientBundle.ar9(), clientBundle.ar10(), clientBundle.ar3()),
                     Arrays.asList(clientBundle.ar1(), clientBundle.ar2(), clientBundle.ar4(), clientBundle.ar5(), clientBundle.ar6(),
                             clientBundle.ar7(), clientBundle.ar8(), clientBundle.ar9(), clientBundle.ar10(), clientBundle.ar3()),
-                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
+                    0, titleHeight + headerHeight, canvasWidth, titleHeight * 5,
                     thumbWidth, thumbHeight);
 
         }
@@ -230,13 +218,11 @@ public class SiteEntryPoint implements EntryPoint {
     }
 
 
-    private MitsouGallery getFinishGallery() {
+    private MitsouGallery getEndorsersGallery() {
         if (finishGallery == null) {
             finishGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.f1(), clientBundle.f2(), clientBundle.f3(), clientBundle.f4(), clientBundle.f5(),
-                            clientBundle.f6(), clientBundle.f7(), clientBundle.f8(), clientBundle.f9(), clientBundle.f10()),
-                    Arrays.asList(clientBundle.f1(), clientBundle.f2(), clientBundle.f3(), clientBundle.f4(), clientBundle.f5(),
-                            clientBundle.f6(), clientBundle.f7(), clientBundle.f8(), clientBundle.f9(), clientBundle.f10()),
+                    Arrays.asList(clientBundle.e1()),
+                    Arrays.asList(clientBundle.e1()),
                     0, titleHeight + headerHeight, canvasWidth, clientHeight,
                     thumbWidth, thumbHeight);
 
@@ -293,45 +279,45 @@ public class SiteEntryPoint implements EntryPoint {
     }
 
     private void createClient() {
-        clientGrid = new CustomGrid(0, titleHeight + headerHeight, 2, 5, tileWidth, tileHeight);
+        clientGrid = new CustomGrid(0, titleHeight + headerHeight, 1, 5, tileWidth, tileHeight);
     }
 
     private void homeScreen(boolean initial) {
 
         clearScreen();
 
-        Shape facebook = paper.image(clientBundle.facebook(), 0, 0, clientBundle.facebook().getWidth(), clientBundle.facebook().getHeight());
-        Set facebookBigMenu = paper.set().push(facebook);
-        clientGrid.putShapeToGrid(0, 0, facebookBigMenu);
+        clientGrid.putShapeToGrid(0, 0, images.getMenuNew());
+        clientGrid.putShapeToGrid(1, 0, images.getMenuArchive());
+        clientGrid.putShapeToGrid(2, 0, images.getMenuExhibitions());
+        clientGrid.putShapeToGrid(3, 0, images.getMenuEndorsers());
+        clientGrid.putShapeToGrid(4, 0, images.getMenuOwners());
 
-
-        clientGrid.putShapeToGrid(0, 1, images.getMenuArchive());
-        clientGrid.putShapeToGrid(1, 1, images.getMenuExhibitions());
-        clientGrid.putShapeToGrid(2, 1, images.getMenuFinish());
-        clientGrid.putShapeToGrid(3, 1, images.getMenuNew());
-        clientGrid.putShapeToGrid(4, 1, images.getMenuOwners());
-
-        bigMenu(facebookBigMenu, "Visit Blasius on facebook!").flip(true);
+        bigMenu(images.getMenuNew(), "New guitars").flip(true);
         bigMenu(images.getMenuArchive(), "Archive").flip(true);
         bigMenu(images.getMenuExhibitions(), "Exhibitions").flip(true);
-        bigMenu(images.getMenuFinish(), "Finishing new series").flip(true);
-        bigMenu(images.getMenuNew(), "New guitars").flip(true);
+        bigMenu(images.getMenuEndorsers(), "Endorsers").flip(true);
         bigMenu(images.getMenuOwners(), "Owners").flip(true);
 
         if (initial) {
-            facebook.click(new MouseEventListener() {
-                @Override
-                public void notifyMouseEvent(NativeEvent nativeEvent) {
-                    Window.open("http://www.facebook.com/BlasiusGuitarsandBasses", "_blank", "");
-                }
-            });
-
             images.getMenuArchive().click(getArchiveGalleryPage());
             images.getMenuExhibitions().click(getExhibitionsGalleryPage());
             images.getMenuNew().click(getNewGalleryPage());
-            images.getMenuFinish().click(getFinishGalleryPage());
+            images.getMenuEndorsers().click(getFinishGalleryPage());
             images.getMenuOwners().click(getOwnersGalleryPage());
         }
+
+
+        Rect bkg = paper.rect(0, facebookFeedY, canvasWidth, 558);
+        bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
+        clonedLayer.add(paper.set().push(bkg));
+
+        Element facebookElement = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
+        facebookElement.getStyle().setDisplay(Style.Display.BLOCK);
+        facebookElement.getStyle().setZIndex(100);
+        facebookElement.getStyle().setPosition(Style.Position.ABSOLUTE);
+        facebookElement.getStyle().setTop(facebookFeedY , Style.Unit.PX);
+        facebookElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
+
 
     }
 
@@ -360,7 +346,7 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                getFinishGallery().show(true);
+                getEndorsersGallery().show(true);
             }
         };
     }
@@ -385,19 +371,31 @@ public class SiteEntryPoint implements EntryPoint {
         };
     }
 
-    private MouseEventListener getNewsPage() {
+    private MouseEventListener getAboutPage() {
         return new MouseEventListener() {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
 
-                Rect bkg = paper.rect(0, headerHeight + titleHeight, canvasWidth, clientHeight);
-                bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
+                final int actualY = headerHeight + titleHeight;
+                Rect bkg = paper.rect(canvasWidth, actualY, canvasWidth, tileHeight * 2);
+                bkg.attr(Attrs.create().fill("black").opacity(0).strokeWidth(0));
                 clonedLayer.add(paper.set().push(bkg));
 
-                Element facebook = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
-                facebook.getStyle().setDisplay(Style.Display.BLOCK);
-                facebook.getStyle().setZIndex(100);
+                bkg.animate(Raphael.animation(Attrs.create().x(0).opacity(.7), 1000, Raphael.EASING_LINEAR,
+                        new Callback() {
+                            @Override
+                            public void call(Shape shape) {
+                                Shape txt = createTextLines(10, actualY + 20, 30, clientBundle.about().getText(), clientTextAttrs)
+                                        .attr(Attrs.create().opacity(0));
+                                clonedLayer.add((Set) txt);
+
+                                txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+                            }
+                        }));
+
+
+
             }
         };
     }

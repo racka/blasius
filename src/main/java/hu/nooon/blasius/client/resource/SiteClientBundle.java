@@ -14,20 +14,17 @@ public interface SiteClientBundle extends ClientBundle {
     @Source("hu/nooon/blasius/public/images/background/background.jpg")
     public ImageResource background();
 
-    @Source("hu/nooon/blasius/public/images/facebook_bkg.jpg")
-    public ImageResource facebook();
 
 
-
-    @Source("hu/nooon/blasius/public/images/archive/cover/archive_cover.jpg") // 512x225
+    @Source("hu/nooon/blasius/public/images/archive/cover/archive_cover.jpg")
     public ImageResource archive_cover();
-    @Source("hu/nooon/blasius/public/images/exhibitions/cover/exhibitions_cover.jpg") // 512x225
+    @Source("hu/nooon/blasius/public/images/exhibitions/cover/exhibitions_cover.jpg")
     public ImageResource exhibitions_cover();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/cover/finish_cover.jpg") // 512x450
-    public ImageResource finish_cover();
-    @Source("hu/nooon/blasius/public/images/new_series/cover/new_cover.jpg") // 512x450
+    @Source("hu/nooon/blasius/public/images/endorsers/cover/endorsers_cover.jpg")
+    public ImageResource endorsers_cover();
+    @Source("hu/nooon/blasius/public/images/new_series/cover/new_cover.jpg")
     public ImageResource new_cover();
-    @Source("hu/nooon/blasius/public/images/owners/cover/owners_cover.jpg") // 512x450
+    @Source("hu/nooon/blasius/public/images/owners/cover/owners_cover.jpg")
     public ImageResource owners_cover();
 
 
@@ -51,28 +48,6 @@ public interface SiteClientBundle extends ClientBundle {
     public ImageResource n9();
     @Source("hu/nooon/blasius/public/images/new_series/225113_391505064249019_660786603_n.jpg")
     public ImageResource n10();
-
-
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/253564_396968000369392_1201103993_n.jpg")
-    public ImageResource f1();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/261993_401674036565455_984446819_n.jpg")
-    public ImageResource f2();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/262386_396967930369399_630678365_n.jpg")
-    public ImageResource f3();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/267288_401674093232116_390942449_n.jpg")
-    public ImageResource f4();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/267501_401674069898785_1608975045_n.jpg")
-    public ImageResource f5();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/292802_401674029898789_1965789097_n.jpg")
-    public ImageResource f6();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/298586_401674136565445_1901289018_n.jpg")
-    public ImageResource f7();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/377319_401673989898793_1144022096_n.jpg")
-    public ImageResource f8();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/380036_401674106565448_1451203780_n.jpg")
-    public ImageResource f9();
-    @Source("hu/nooon/blasius/public/images/finishing_new_series/398355_401674146565444_485504881_n.jpg")
-    public ImageResource f10();
 
 
     @Source("hu/nooon/blasius/public/images/archive/196819_391547204244805_1722238409_n.jpg")
@@ -141,7 +116,12 @@ public interface SiteClientBundle extends ClientBundle {
     @Source("hu/nooon/blasius/public/images/owners/550373_402414583158067_372299087_n.jpg")
     public ImageResource o10();
 
-//    @Source("hu/nooon/blasius/public/music/fjb_track.mp3")
-//    public DataResource audio1();
+    @Source("hu/nooon/blasius/public/images/endorsers/e1.jpg")
+    public ImageResource e1();
+
+
+
+    @Source("hu/nooon/blasius/public/texts/about.txt")
+    public TextResource about();
 
 }

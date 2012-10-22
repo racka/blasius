@@ -43,9 +43,9 @@ public class ImageRepository {
         return menuExhibitions;
     }
 
-    public Set getMenuFinish() {
+    public Set getMenuEndorsers() {
         if (menuFinish == null) {
-            menuFinish = addToRepository(paper, clientBundle.finish_cover());
+            menuFinish = addToRepository(paper, clientBundle.endorsers_cover());
         }
         return menuFinish;
     }
