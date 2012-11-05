@@ -6,4 +6,14 @@
 
     <display-name>Blasius</display-name>
 
+    <servlet>
+        <servlet-name>driveServletImpl</servlet-name>
+        <servlet-class>hu.nooon.blasius.server.drive.GoogleDriveServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>driveServletImpl</servlet-name>
+        <url-pattern>/blasius/googledrive</url-pattern>
+    </servlet-mapping>
+
 </web-app>

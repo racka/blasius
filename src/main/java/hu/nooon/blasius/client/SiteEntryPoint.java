@@ -3,12 +3,16 @@ package hu.nooon.blasius.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.*;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.reveregroup.gwt.imagepreloader.ImageLoadEvent;
 import hu.nooon.blasius.client.event.AnimationEvent;
 import hu.nooon.blasius.client.event.AnimationEventHandler;
-import hu.nooon.blasius.client.resource.SiteClientBundle;
+import hu.nooon.blasius.client.event.DriveInitEvent;
+import hu.nooon.blasius.client.event.DriveInitEventHandler;
+import hu.nooon.blasius.client.resource.BlasiusBundle;
 import hu.nooon.blasius.client.widgets.*;
 import org.sgx.raphael4gwt.raphael.*;
 import org.sgx.raphael4gwt.raphael.base.Attrs;
@@ -40,7 +44,8 @@ public class SiteEntryPoint implements EntryPoint {
     private static final int canvasHeight = facebookFeedY + 558;
     private static final double menuOpacity = .4;
 
-    private SiteClientBundle clientBundle = SiteClientBundle.INSTANCE;
+    //    private SiteClientBundle clientBundle = SiteClientBundle.INSTANCE;
+    private BlasiusBundle clientBundle = new BlasiusBundle();
 
     private final EventBus eventBus = GWT.create(SimpleEventBus.class);
 
@@ -69,8 +74,7 @@ public class SiteEntryPoint implements EntryPoint {
     public void onModuleLoad() {
 
         Document.get().getBody().getStyle().setMargin(0, Style.Unit.PX);
-        Document.get().getBody().getStyle().setBackgroundImage("url(" + clientBundle.background().getSafeUri().asString() + ")");
-        DivElement divElement = Document.get().createDivElement();
+        final DivElement divElement = Document.get().createDivElement();
         Document.get().getBody().appendChild(divElement);
         divElement.getStyle().setZIndex(5);
         divElement.getStyle().setWidth(canvasWidth, Style.Unit.PX);
@@ -96,17 +100,36 @@ public class SiteEntryPoint implements EntryPoint {
             }
         });
 
-        initRaphael(divElement);
+        eventBus.addHandler(DriveInitEvent.TYPE, new DriveInitEventHandler() {
+            @Override
+            public void onDriveInit(DriveInitEvent event) {
+                com.google.gwt.user.client.ui.Image bkg = clientBundle.getBackground();
+                Document.get().getBody().getStyle().setBackgroundImage("url(" + bkg.getUrl() + ")");
 
-        createTitle();
 
-        createHeader();
+                initRaphael(divElement);
 
-        createClient();
+                createTitle();
 
-        initResources();
+                createHeader();
 
-        homeScreen(true);
+                createClient();
+
+                initResources();
+
+                homeScreen(true);
+
+            }
+        });
+
+
+        try {
+            clientBundle.initHierarchy(eventBus).send();
+        } catch (RequestException e) {
+            Window.alert("Google Drive access error! Please reload the page.");
+        }
+
+
     }
 
     private void initRaphael(DivElement divElement) {
@@ -189,77 +212,6 @@ public class SiteEntryPoint implements EntryPoint {
 
     private MitsouGallery newGallery, archiveGallery, finishGallery, exhibitionsGallery, ownersGallery;
 
-    private MitsouGallery getArchiveGallery() {
-        if (archiveGallery == null) {
-            archiveGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.ar1(), clientBundle.ar2(), clientBundle.ar4(), clientBundle.ar5(), clientBundle.ar6(),
-                            clientBundle.ar7(), clientBundle.ar8(), clientBundle.ar9(), clientBundle.ar10(), clientBundle.ar3()),
-                    Arrays.asList(clientBundle.ar1(), clientBundle.ar2(), clientBundle.ar4(), clientBundle.ar5(), clientBundle.ar6(),
-                            clientBundle.ar7(), clientBundle.ar8(), clientBundle.ar9(), clientBundle.ar10(), clientBundle.ar3()),
-                    0, titleHeight + headerHeight, canvasWidth, titleHeight * 5,
-                    thumbWidth, thumbHeight);
-
-        }
-        return archiveGallery;
-    }
-
-    private MitsouGallery getNewGallery() {
-        if (newGallery == null) {
-            newGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.n1(), clientBundle.n2(), clientBundle.n3(), clientBundle.n4(), clientBundle.n5(),
-                            clientBundle.n6(), clientBundle.n7(), clientBundle.n8(), clientBundle.n9(), clientBundle.n10()),
-                    Arrays.asList(clientBundle.n1(), clientBundle.n2(), clientBundle.n3(), clientBundle.n4(), clientBundle.n5(),
-                            clientBundle.n6(), clientBundle.n7(), clientBundle.n8(), clientBundle.n9(), clientBundle.n10()),
-                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
-                    thumbWidth, thumbHeight);
-
-        }
-        return newGallery;
-    }
-
-
-    private MitsouGallery getEndorsersGallery() {
-        if (finishGallery == null) {
-            finishGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.e1()),
-                    Arrays.asList(clientBundle.e1()),
-                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
-                    thumbWidth, thumbHeight);
-
-        }
-        return finishGallery;
-    }
-
-
-    private MitsouGallery getExhibitionsGallery() {
-        if (exhibitionsGallery == null) {
-            exhibitionsGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.ex1(), clientBundle.ex2(), clientBundle.ex3(), clientBundle.ex4(), clientBundle.ex5(),
-                            clientBundle.ex6(), clientBundle.ex7(), clientBundle.ex8(), clientBundle.ex9(), clientBundle.ex10()),
-                    Arrays.asList(clientBundle.ex1(), clientBundle.ex2(), clientBundle.ex3(), clientBundle.ex4(), clientBundle.ex5(),
-                            clientBundle.ex6(), clientBundle.ex7(), clientBundle.ex8(), clientBundle.ex9(), clientBundle.ex10()),
-                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
-                    thumbWidth, thumbHeight);
-
-        }
-        return exhibitionsGallery;
-    }
-
-    private MitsouGallery getOwnersGallery() {
-        if (ownersGallery == null) {
-            ownersGallery = new MitsouGallery(paper,
-                    Arrays.asList(clientBundle.o1(), clientBundle.o2(), clientBundle.o3(), clientBundle.o4(), clientBundle.o5(),
-                            clientBundle.o6(), clientBundle.o7(), clientBundle.o8(), clientBundle.o9(), clientBundle.o10()),
-                    Arrays.asList(clientBundle.o1(), clientBundle.o2(), clientBundle.o3(), clientBundle.o4(), clientBundle.o5(),
-                            clientBundle.o6(), clientBundle.o7(), clientBundle.o8(), clientBundle.o9(), clientBundle.o10()),
-                    0, titleHeight + headerHeight, canvasWidth, clientHeight,
-                    thumbWidth, thumbHeight);
-
-        }
-        return ownersGallery;
-    }
-
-
     private void hideGallery() {
         if (ownersGallery != null) {
             ownersGallery.hide(true);
@@ -286,89 +238,53 @@ public class SiteEntryPoint implements EntryPoint {
 
         clearScreen();
 
-        clientGrid.putShapeToGrid(0, 0, images.getMenuNew());
-        clientGrid.putShapeToGrid(1, 0, images.getMenuArchive());
-        clientGrid.putShapeToGrid(2, 0, images.getMenuExhibitions());
-        clientGrid.putShapeToGrid(3, 0, images.getMenuEndorsers());
-        clientGrid.putShapeToGrid(4, 0, images.getMenuOwners());
-
-        bigMenu(images.getMenuNew(), "New guitars").flip(true);
-        bigMenu(images.getMenuArchive(), "Archive").flip(true);
-        bigMenu(images.getMenuExhibitions(), "Exhibitions").flip(true);
-        bigMenu(images.getMenuEndorsers(), "Endorsers").flip(true);
-        bigMenu(images.getMenuOwners(), "Owners").flip(true);
-
-        if (initial) {
-            images.getMenuArchive().click(getArchiveGalleryPage());
-            images.getMenuExhibitions().click(getExhibitionsGalleryPage());
-            images.getMenuNew().click(getNewGalleryPage());
-            images.getMenuEndorsers().click(getFinishGalleryPage());
-            images.getMenuOwners().click(getOwnersGalleryPage());
-        }
-
-
-        Rect bkg = paper.rect(0, facebookFeedY, canvasWidth, 558);
-        bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
-        clonedLayer.add(paper.set().push(bkg));
-
-        Element facebookElement = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
-        facebookElement.getStyle().setDisplay(Style.Display.BLOCK);
-        facebookElement.getStyle().setZIndex(100);
-        facebookElement.getStyle().setPosition(Style.Position.ABSOLUTE);
-        facebookElement.getStyle().setTop(facebookFeedY , Style.Unit.PX);
-        facebookElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
-
-
-    }
-
-    private MouseEventListener getArchiveGalleryPage() {
-        return new MouseEventListener() {
+        clientBundle.getBass4String(paper, new com.google.gwt.core.client.Callback() {
             @Override
-            public void notifyMouseEvent(NativeEvent nativeEvent) {
-                clearScreen();
-                getArchiveGallery().show(true);
+            public void onFailure(Object reason) {
+                ImageLoadEvent event = (ImageLoadEvent) reason;
+                Shape fourString = paper.set().push(paper.image(event.getImageUrl(), 0, 0, event.getDimensions().getWidth(), event.getDimensions().getHeight()));
+                clientGrid.putShapeToGrid(0, 0, fourString);
             }
-        };
-    }
 
-    private MouseEventListener getNewGalleryPage() {
-        return new MouseEventListener() {
             @Override
-            public void notifyMouseEvent(NativeEvent nativeEvent) {
-                clearScreen();
-                getNewGallery().show(true);
+            public void onSuccess(Object result) {
+                clientGrid.putShapeToGrid(0, 0, (Shape) result);
             }
-        };
-    }
+        });
 
-    private MouseEventListener getFinishGalleryPage() {
-        return new MouseEventListener() {
-            @Override
-            public void notifyMouseEvent(NativeEvent nativeEvent) {
-                clearScreen();
-                getEndorsersGallery().show(true);
-            }
-        };
-    }
 
-    private MouseEventListener getExhibitionsGalleryPage() {
-        return new MouseEventListener() {
-            @Override
-            public void notifyMouseEvent(NativeEvent nativeEvent) {
-                clearScreen();
-                getExhibitionsGallery().show(true);
-            }
-        };
-    }
+//        clientGrid.putShapeToGrid(1, 0, images.getMenuArchive());
+//        clientGrid.putShapeToGrid(2, 0, images.getMenuExhibitions());
+//        clientGrid.putShapeToGrid(3, 0, images.getMenuEndorsers());
+//        clientGrid.putShapeToGrid(4, 0, images.getMenuOwners());
 
-    private MouseEventListener getOwnersGalleryPage() {
-        return new MouseEventListener() {
-            @Override
-            public void notifyMouseEvent(NativeEvent nativeEvent) {
-                clearScreen();
-                getOwnersGallery().show(true);
-            }
-        };
+//        bigMenu(images.getMenuNew(), "New guitars").flip(true);
+//        bigMenu(images.getMenuArchive(), "Archive").flip(true);
+//        bigMenu(images.getMenuExhibitions(), "Exhibitions").flip(true);
+//        bigMenu(images.getMenuEndorsers(), "Endorsers").flip(true);
+//        bigMenu(images.getMenuOwners(), "Owners").flip(true);
+
+//        if (initial) {
+//            images.getMenuArchive().click(getArchiveGalleryPage());
+//            images.getMenuExhibitions().click(getExhibitionsGalleryPage());
+//            images.getMenuNew().click(getNewGalleryPage());
+//            images.getMenuEndorsers().click(getFinishGalleryPage());
+//            images.getMenuOwners().click(getOwnersGalleryPage());
+//        }
+
+//
+//        Rect bkg = paper.rect(0, facebookFeedY, canvasWidth, 558);
+//        bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
+//        clonedLayer.add(paper.set().push(bkg));
+
+//        Element facebookElement = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
+//        facebookElement.getStyle().setDisplay(Style.Display.BLOCK);
+//        facebookElement.getStyle().setZIndex(100);
+//        facebookElement.getStyle().setPosition(Style.Position.ABSOLUTE);
+//        facebookElement.getStyle().setTop(facebookFeedY, Style.Unit.PX);
+//        facebookElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
+
+
     }
 
     private MouseEventListener getAboutPage() {
@@ -386,14 +302,14 @@ public class SiteEntryPoint implements EntryPoint {
                         new Callback() {
                             @Override
                             public void call(Shape shape) {
-                                Shape txt = createTextLines(10, actualY + 20, 30, clientBundle.about().getText(), clientTextAttrs)
-                                        .attr(Attrs.create().opacity(0));
-                                clonedLayer.add((Set) txt);
-
-                                txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+//
+//                                Shape txt = createTextLines(10, actualY + 20, 30, clientBundle.getAbout(), clientTextAttrs)
+//                                        .attr(Attrs.create().opacity(0));
+//                                clonedLayer.add((Set) txt);
+//
+//                                txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
                             }
                         }));
-
 
 
             }

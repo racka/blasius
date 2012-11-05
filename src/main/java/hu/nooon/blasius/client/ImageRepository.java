@@ -29,38 +29,38 @@ public class ImageRepository {
     }
 
 
-    public Set getMenuArchive() {
-        if (menuArchive == null) {
-            menuArchive = addToRepository(paper, clientBundle.archive_cover());
-        }
-        return menuArchive;
-    }
-
-    public Set getMenuExhibitions() {
-        if (menuExhibitions == null) {
-            menuExhibitions = addToRepository(paper, clientBundle.exhibitions_cover());
-        }
-        return menuExhibitions;
-    }
-
-    public Set getMenuEndorsers() {
-        if (menuFinish == null) {
-            menuFinish = addToRepository(paper, clientBundle.endorsers_cover());
-        }
-        return menuFinish;
-    }
-
-    public Set getMenuNew() {
-        if (menuNew == null) {
-            menuNew = addToRepository(paper, clientBundle.new_cover());
-        }
-        return menuNew;
-    }
-
-    public Set getMenuOwners() {
-        if (menuOwners == null) {
-            menuOwners = addToRepository(paper, clientBundle.owners_cover());
-        }
-        return menuOwners;
-    }
+//    public Set getMenuArchive() {
+//        if (menuArchive == null) {
+//            menuArchive = addToRepository(paper, clientBundle.archive_cover());
+//        }
+//        return menuArchive;
+//    }
+//
+//    public Set getMenuExhibitions() {
+//        if (menuExhibitions == null) {
+//            menuExhibitions = addToRepository(paper, clientBundle.exhibitions_cover());
+//        }
+//        return menuExhibitions;
+//    }
+//
+//    public Set getMenuEndorsers() {
+//        if (menuFinish == null) {
+//            menuFinish = addToRepository(paper, clientBundle.endorsers_cover());
+//        }
+//        return menuFinish;
+//    }
+//
+//    public Set getMenuNew() {
+//        if (menuNew == null) {
+//            menuNew = addToRepository(paper, clientBundle.new_cover());
+//        }
+//        return menuNew;
+//    }
+//
+//    public Set getMenuOwners() {
+//        if (menuOwners == null) {
+//            menuOwners = addToRepository(paper, clientBundle.owners_cover());
+//        }
+//        return menuOwners;
+//    }
 }

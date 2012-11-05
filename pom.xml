@@ -11,6 +11,19 @@
 
     <name>Blasius</name>
 
+    <repositories>
+        <repository>
+            <id>google-api-services</id>
+            <url>http://mavenrepo.google-api-java-client.googlecode.com/hg</url>
+        </repository>
+        <repository>
+            <id>google-releases</id>
+            <name>Google Releases</name>
+            <url>https://oss.sonatype.org/content/repositories/google-releases</url>
+        </repository>
+    </repositories>
+
+
     <dependencies>
 
         <dependency>
@@ -51,10 +64,53 @@
         </dependency>
 
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20090211</version>
+            <groupId>gwt-image-loader</groupId>
+            <artifactId>gwt-image-loader</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/webapp/lib/gwt-image-loader-1.1.4.jar</systemPath>
         </dependency>
+
+
+        <!--<dependency>-->
+            <!--<groupId>org.json</groupId>-->
+            <!--<artifactId>json</artifactId>-->
+            <!--<version>20090211</version>-->
+        <!--</dependency>-->
+
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v2-rev13-1.8.0-beta</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-oauth2</artifactId>
+            <version>v2-rev15-1.8.0-beta</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client</artifactId>
+            <version>1.11.0-beta</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client-appengine</artifactId>
+            <version>1.11.0-beta</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>13.0.1</version>
+        </dependency>
+
+
 
     </dependencies>
 
@@ -97,13 +153,39 @@
 
             </plugin>
 
+            <plugin>
+                <groupId>net.kindleit</groupId>
+                <artifactId>maven-gae-plugin</artifactId>
+                <version>0.9.4</version>
+                <configuration>
+                    <port>8080</port>
+                    <splitJars>true</splitJars>
+                    <unpackVersion>${gae.version}</unpackVersion>
+                    <serverId>appengine.google.com</serverId>
+                    <debugPort>8000</debugPort>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.kindleit</groupId>
+                        <artifactId>gae-runtime</artifactId>
+                        <version>${gae.runtime.version}</version>
+                        <type>pom</type>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+
 
         </plugins>
     </build>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gwt.version>2.5.0-rc1</gwt.version>
+        <gwt.version>2.5.0-rc2</gwt.version>
         <gwt.plugin.version>2.5.0-rc1</gwt.plugin.version>
+        <gae.home>/Users/racka/Development/appengine-java-sdk-1.7.2.1</gae.home>
+        <gae.wait>true</gae.wait>
+        <gae.version>1.7.2.1</gae.version>
+        <gae.runtime.version>1.7.2</gae.runtime.version>
     </properties>
 </project>
