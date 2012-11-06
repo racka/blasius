@@ -68,8 +68,20 @@ public class DriveBundle {
         return fileIds.get(folderName + "/" + fileName);
     }
 
+    public List<String> getFileIds(String folderName) {
+        List<String> ids = new ArrayList<String>();
 
-    public String getStreamURL(String folder, String fileName, String mime) {
+        for (String key : fileIds.keySet()) {
+            if (key.startsWith(folderName + "/")) {
+                ids.add(fileIds.get(key));
+            }
+        }
+
+        return ids;
+    }
+
+
+    public String getStreamURLbyName(String folder, String fileName, String mime) {
         String fileId = getFileId(folder, fileName);
 
         if (!fileId.isEmpty()) {
@@ -79,6 +91,13 @@ public class DriveBundle {
         return "";
     }
 
+    public String getStreamURLbyId(String fileId, String mime) {
+        if (!fileId.isEmpty()) {
+            return GWT.getModuleBaseURL() + "googledrive?op=stream&mime=" + mime + "&fileID=" + fileId;
+        }
+
+        return "";
+    }
 
 
 }

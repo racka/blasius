@@ -7,13 +7,13 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
-import com.reveregroup.gwt.imagepreloader.ImageLoadEvent;
-import hu.nooon.blasius.client.event.AnimationEvent;
-import hu.nooon.blasius.client.event.AnimationEventHandler;
 import hu.nooon.blasius.client.event.DriveInitEvent;
 import hu.nooon.blasius.client.event.DriveInitEventHandler;
 import hu.nooon.blasius.client.resource.BlasiusBundle;
-import hu.nooon.blasius.client.widgets.*;
+import hu.nooon.blasius.client.widgets.AlteratingProxyShape;
+import hu.nooon.blasius.client.widgets.CustomGrid;
+import hu.nooon.blasius.client.widgets.FadedObject;
+import hu.nooon.blasius.client.widgets.MitsouGallery;
 import org.sgx.raphael4gwt.raphael.*;
 import org.sgx.raphael4gwt.raphael.base.Attrs;
 import org.sgx.raphael4gwt.raphael.base.Rectangle;
@@ -23,7 +23,6 @@ import org.sgx.raphael4gwt.raphael.event.MouseEventListener;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 
 public class SiteEntryPoint implements EntryPoint {
@@ -73,6 +72,8 @@ public class SiteEntryPoint implements EntryPoint {
 
     public void onModuleLoad() {
 
+        hideFaceBook();
+
         Document.get().getBody().getStyle().setMargin(0, Style.Unit.PX);
         final DivElement divElement = Document.get().createDivElement();
         Document.get().getBody().appendChild(divElement);
@@ -82,23 +83,33 @@ public class SiteEntryPoint implements EntryPoint {
         divElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
         divElement.getStyle().setTop(0, Style.Unit.PX);
 
-        eventBus.addHandler(AnimationEvent.TYPE, new AnimationEventHandler() {
-            @Override
-            public void animate(AnimationEvent event) {
-                final List<FutureProxyShape> sequence = event.getSequence();
-                if (!sequence.isEmpty()) {
-                    Callback callback = sequence.size() > 1 ?
-                            new Callback() {
-                                @Override
-                                public void call(Shape shape) {
-                                    eventBus.fireEvent(new AnimationEvent(sequence.subList(1, sequence.size())));
-                                }
-                            } : null;
-
-                    sequence.get(0).animate(callback);
-                }
-            }
-        });
+//        eventBus.addHandler(SequenceEvent.TYPE, new SequenceEventHandler() {
+//            @Override
+//            public void invoke(SequenceEvent event) {
+//                final List sequence = event.getSequence();
+//                final com.google.gwt.core.client.Callback callback = event.getCallback();
+//                if (!sequence.isEmpty()) {
+//
+//                    callback.onSuccess(sequence.get(0));
+//
+//
+//                    com.google.gwt.core.client.Callback sequenceCallback = sequence.size() > 1 ?
+//                            new com.google.gwt.core.client.Callback() {
+//                                @Override
+//                                public void onFailure(Object reason) {
+//                                    //To change body of implemented methods use File | Settings | File Templates.
+//                                }
+//
+//                                @Override
+//                                public void onSuccess(Object result) {
+//                                    callback.onSuccess(result);
+//                                    eventBus.fireEvent(new SequenceEvent(sequence.subList(1, sequence.size()), callback));
+//                                }
+//                            }
+//                             : null;
+//                }
+//            }
+//        });
 
         eventBus.addHandler(DriveInitEvent.TYPE, new DriveInitEventHandler() {
             @Override
@@ -117,7 +128,7 @@ public class SiteEntryPoint implements EntryPoint {
 
                 initResources();
 
-                homeScreen(true);
+                homeScreen();
 
             }
         });
@@ -171,7 +182,7 @@ public class SiteEntryPoint implements EntryPoint {
         title.click(new MouseEventListener() {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
-                homeScreen(false);
+                homeScreen();
             }
         });
 
@@ -201,7 +212,7 @@ public class SiteEntryPoint implements EntryPoint {
         menuHome.getShape().click(new MouseEventListener() {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
-                homeScreen(false);
+                homeScreen();
             }
         });
         menuAbout.getShape().click(getAboutPage());
@@ -210,7 +221,7 @@ public class SiteEntryPoint implements EntryPoint {
 //        menuOrder.getShape().click(getOrderPage());
     }
 
-    private MitsouGallery newGallery, archiveGallery, finishGallery, exhibitionsGallery, ownersGallery;
+    private MitsouGallery bass4StringGallery, archiveGallery, finishGallery, exhibitionsGallery, ownersGallery;
 
     private void hideGallery() {
         if (ownersGallery != null) {
@@ -219,8 +230,8 @@ public class SiteEntryPoint implements EntryPoint {
         if (finishGallery != null) {
             finishGallery.hide(true);
         }
-        if (newGallery != null) {
-            newGallery.hide(true);
+        if (bass4StringGallery != null) {
+            bass4StringGallery.hide(true);
         }
         if (exhibitionsGallery != null) {
             exhibitionsGallery.hide(true);
@@ -234,21 +245,24 @@ public class SiteEntryPoint implements EntryPoint {
         clientGrid = new CustomGrid(0, titleHeight + headerHeight, 1, 5, tileWidth, tileHeight);
     }
 
-    private void homeScreen(boolean initial) {
+    private void homeScreen() {
 
         clearScreen();
 
         clientBundle.getBass4String(paper, new com.google.gwt.core.client.Callback() {
             @Override
             public void onFailure(Object reason) {
-                ImageLoadEvent event = (ImageLoadEvent) reason;
-                Shape fourString = paper.set().push(paper.image(event.getImageUrl(), 0, 0, event.getDimensions().getWidth(), event.getDimensions().getHeight()));
-                clientGrid.putShapeToGrid(0, 0, fourString);
+                Shape shape = (Shape) reason;
+                clientGrid.putShapeToGrid(0, 0, shape);
+                bigMenu((Set) shape, "4 string basses").flip(true);
+                shape.click(get4StringBassesGalleryPage());
             }
 
             @Override
             public void onSuccess(Object result) {
-                clientGrid.putShapeToGrid(0, 0, (Shape) result);
+                Shape shape = (Shape) result;
+                clientGrid.putShapeToGrid(0, 0, shape);
+                bigMenu((Set) shape, "4 string basses").flip(true);
             }
         });
 
@@ -287,6 +301,17 @@ public class SiteEntryPoint implements EntryPoint {
 
     }
 
+    private MouseEventListener get4StringBassesGalleryPage() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+                clientBundle.getBass4StringGallery(paper, clientBundle, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+            }
+        };
+    }
+
+
     private MouseEventListener getAboutPage() {
         return new MouseEventListener() {
             @Override
@@ -307,7 +332,7 @@ public class SiteEntryPoint implements EntryPoint {
 //                                        .attr(Attrs.create().opacity(0));
 //                                clonedLayer.add((Set) txt);
 //
-//                                txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+//                                txt.invoke(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
                             }
                         }));
 
