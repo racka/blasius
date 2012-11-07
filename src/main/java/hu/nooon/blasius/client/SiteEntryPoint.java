@@ -46,7 +46,6 @@ public class SiteEntryPoint implements EntryPoint {
     private static final int canvasHeight = facebookFeedY + 558;
     private static final double menuOpacity = .4;
 
-    //    private SiteClientBundle clientBundle = SiteClientBundle.INSTANCE;
     private BlasiusBundle clientBundle = new BlasiusBundle();
 
     private final EventBus eventBus = GWT.create(SimpleEventBus.class);
@@ -62,7 +61,6 @@ public class SiteEntryPoint implements EntryPoint {
             Attrs.create().fontFamily("Playfair Display, cursive").fontSize(16).fill("black").textAnchor("start");
     private final Attrs clientTextAttrs =
             Attrs.create().fontFamily("Adamina, serif").fontSize(16).fill("white").textAnchor("start");
-
     private final Attrs bigMenuTextAttrs =
             Attrs.create().fontFamily("Chau Philomene One, sans-serif").fontSize(50).fill("white").textAnchor("start");
 
@@ -70,7 +68,6 @@ public class SiteEntryPoint implements EntryPoint {
     private Paper paper;
     private CustomGrid clientGrid, menuGrid;
     private java.util.Set<Set> modifiedLayer, clonedLayer;
-    private ImageRepository images;
     private SiteAudio audio;
 
     public void onModuleLoad() {
@@ -91,7 +88,7 @@ public class SiteEntryPoint implements EntryPoint {
             public void invoke(SequenceEvent event) {
                 final List sequence = event.getSequence();
                 final com.google.gwt.core.client.Callback callback = event.getCallback();
-                if (!sequence.isEmpty()) {
+                if (!sequence.isEmpty() && callback != null) {
                     callback.onSuccess(sequence.subList(1, sequence.size()));
                 }
             }
@@ -100,9 +97,7 @@ public class SiteEntryPoint implements EntryPoint {
         eventBus.addHandler(DriveInitEvent.TYPE, new DriveInitEventHandler() {
             @Override
             public void onDriveInit(DriveInitEvent event) {
-                com.google.gwt.user.client.ui.Image bkg = clientBundle.getBackground();
-                Document.get().getBody().getStyle().setBackgroundImage("url(" + bkg.getUrl() + ")");
-
+                Document.get().getBody().getStyle().setBackgroundImage("url(" + clientBundle.getBackgroundURL() + ")");
 
                 initRaphael(divElement);
 
@@ -111,8 +106,6 @@ public class SiteEntryPoint implements EntryPoint {
                 createHeader();
 
                 createClient();
-
-                initResources();
 
                 homeScreen();
 
@@ -135,12 +128,6 @@ public class SiteEntryPoint implements EntryPoint {
         modifiedLayer = new HashSet<Set>();
     }
 
-
-    private void initResources() {
-        images = new ImageRepository(paper);
-
-//        audio = new SiteAudio();
-    }
 
     private Shape createTextLines(int x, int y, int lineHeight, String txt, Attrs textAttrs) {
         Set shape = paper.set();
@@ -257,7 +244,8 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                bass4StringGallery = clientBundle.getBass4StringGallery(paper, eventBus, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+                bass4StringGallery = clientBundle.getBass4StringGallery(paper, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+                bass4StringGallery.show(true);
             }
         };
     }

@@ -155,22 +155,8 @@ public abstract class DriveServletUtils extends HttpServlet {
             customJSON.append("\"id\":\"").append(file.getId()).append("\"");
             customJSON.append(",\"title\":\"").append(file.getTitle()).append("\"");
             customJSON.append(",\"downloadUrl\":\"").append(file.getDownloadUrl()).append("\"");
+            customJSON.append(",\"mimeType\":\"").append(file.getMimeType()).append("\"");
             customJSON.append(",\"parent\":\"").append(file.getParents().isEmpty() ? "" : file.getParents().get(0).getId()).append("\"");
-            if (file.getExportLinks() != null) {
-                customJSON.append(",\"exportLinks\":[");
-                int exportLinkCounter = 0;
-                for (Map.Entry exportLink : file.getExportLinks().entrySet()) {
-                    if (exportLinkCounter != 0) {
-                        customJSON.append(",");
-                    }
-                    customJSON.append("{");
-                    customJSON.append("\"mime\":\"").append(exportLink.getKey()).append("\"");
-                    customJSON.append(",\"url\":\"").append(exportLink.getValue()).append("\"");
-                    customJSON.append("}");
-                    exportLinkCounter++;
-                }
-                customJSON.append("]");
-            }
             customJSON.append("}");
             counter++;
         }

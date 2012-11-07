@@ -1,11 +1,9 @@
 package hu.nooon.blasius.client.widgets;
 
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.web.bindery.event.shared.EventBus;
 import com.reveregroup.gwt.imagepreloader.ImageLoadEvent;
 import com.reveregroup.gwt.imagepreloader.ImageLoadHandler;
 import com.reveregroup.gwt.imagepreloader.ImagePreloader;
-import hu.nooon.blasius.client.event.SequenceEvent;
 import org.sgx.raphael4gwt.raphael.Paper;
 import org.sgx.raphael4gwt.raphael.Raphael;
 import org.sgx.raphael4gwt.raphael.Set;
@@ -22,18 +20,18 @@ import java.util.Map;
 public class MitsouGallery implements CustomLayer {
 
     private Paper paper;
-    private EventBus eventBus;
     private List<FadedObject> thumbnails;
     private final Set thumbnailSet;
     private Map<Integer, Shape> images;
     private Shape actualImage;
     private Shape thumbFrame;
     private int x, y, width, thumbWidth, thumbHeight;
+    private List<String> imageDownloadURLs;
 
-    public MitsouGallery(Paper paper, EventBus eventBus, final int x, final int y, final int width, final int thumbWidth, int thumbHeight) {
+    public MitsouGallery(Paper paper, List<String> imageDownloadURLs, int x, int y, int width, int thumbWidth, int thumbHeight) {
 
         this.paper = paper;
-        this.eventBus = eventBus;
+        this.imageDownloadURLs = imageDownloadURLs;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -44,6 +42,11 @@ public class MitsouGallery implements CustomLayer {
         this.thumbnailSet = paper.set();
         this.thumbnails = new ArrayList<FadedObject>();
     }
+
+    public void fetchImages() {
+        addImages(imageDownloadURLs);
+    }
+
 
     public void addImages(final List<String> imageDownloadURLs) {
 
@@ -67,17 +70,7 @@ public class MitsouGallery implements CustomLayer {
 
                     imageWithFrame.attr(Attrs.create().opacity(0)).hide();
 
-                    eventBus.fireEvent(new SequenceEvent(imageDownloadURLs, new com.google.gwt.core.client.Callback() {
-                        @Override
-                        public void onFailure(Object reason) {
-                        }
-
-                        @Override
-                        public void onSuccess(Object result) {
-                            addImages((List<String>) result);
-                        }
-                    }));
-
+                    MitsouGallery.this.addImages(imageDownloadURLs.subList(1, imageDownloadURLs.size()));
                 }
             });
         }
@@ -137,27 +130,29 @@ public class MitsouGallery implements CustomLayer {
     }
 
     private void showNewShape(final int index) {
-        if (actualImage != null) {
-            actualImage.stop();
-            actualImage.animate(
-                    Raphael.animation(Attrs.create().opacity(0), 200, Raphael.EASING_LINEAR,
-                            new Callback() {
-                                @Override
-                                public void call(Shape shape) {
-                                    images.get(index).toBack().show().animate(Raphael.animation(
-                                            Attrs.create().opacity(1), 200, Raphael.EASING_LINEAR));
-                                    actualImage = images.get(index);
-                                }
-                            }).delay(getRandom(500)));
-        } else {
-            images.get(index).toBack().show().animate(Raphael.animation(
-                    Attrs.create().opacity(1),
-                    200, Raphael.EASING_LINEAR, new Callback() {
-                @Override
-                public void call(Shape src) {
-                    actualImage = images.get(index);
-                }
-            }).delay(getRandom(500)));
+        if (images.size() > index) {
+            if (actualImage != null) {
+                actualImage.stop();
+                actualImage.animate(
+                        Raphael.animation(Attrs.create().opacity(0), 200, Raphael.EASING_LINEAR,
+                                new Callback() {
+                                    @Override
+                                    public void call(Shape shape) {
+                                        images.get(index).toBack().show().animate(Raphael.animation(
+                                                Attrs.create().opacity(1), 200, Raphael.EASING_LINEAR));
+                                        actualImage = images.get(index);
+                                    }
+                                }).delay(getRandom(500)));
+            } else {
+                images.get(index).toBack().show().animate(Raphael.animation(
+                        Attrs.create().opacity(1),
+                        200, Raphael.EASING_LINEAR, new Callback() {
+                    @Override
+                    public void call(Shape src) {
+                        actualImage = images.get(index);
+                    }
+                }).delay(getRandom(500)));
+            }
         }
     }
 

@@ -10,10 +10,7 @@ public class DriveFileMeta extends JavaScriptObject {
     public final native String getId() /*-{ return this.id; }-*/;
     public final native String getTitle() /*-{ return this.title; }-*/;
     public final native String getParentId() /*-{ return this.parent; }-*/;
-    public final native String getDownloadURL() /*-{ return this.downloadUrl; }-*/;
-    public final native JsArray<ExportLink> getExportLinks() /*-{ return this.exportLinks; }-*/;
+    public final native String getMimeType() /*-{ return this.mimeType; }-*/;
 
     public static native JsArray<DriveFileMeta> getAsArray(String json) /*-{ return eval(json); }-*/;
-
-
 }
