@@ -9,6 +9,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import hu.nooon.blasius.client.event.DriveInitEvent;
 import hu.nooon.blasius.client.event.DriveInitEventHandler;
+import hu.nooon.blasius.client.event.SequenceEvent;
+import hu.nooon.blasius.client.event.SequenceEventHandler;
 import hu.nooon.blasius.client.resource.BlasiusBundle;
 import hu.nooon.blasius.client.widgets.AlteratingProxyShape;
 import hu.nooon.blasius.client.widgets.CustomGrid;
@@ -23,6 +25,7 @@ import org.sgx.raphael4gwt.raphael.event.MouseEventListener;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 
 public class SiteEntryPoint implements EntryPoint {
@@ -83,33 +86,16 @@ public class SiteEntryPoint implements EntryPoint {
         divElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
         divElement.getStyle().setTop(0, Style.Unit.PX);
 
-//        eventBus.addHandler(SequenceEvent.TYPE, new SequenceEventHandler() {
-//            @Override
-//            public void invoke(SequenceEvent event) {
-//                final List sequence = event.getSequence();
-//                final com.google.gwt.core.client.Callback callback = event.getCallback();
-//                if (!sequence.isEmpty()) {
-//
-//                    callback.onSuccess(sequence.get(0));
-//
-//
-//                    com.google.gwt.core.client.Callback sequenceCallback = sequence.size() > 1 ?
-//                            new com.google.gwt.core.client.Callback() {
-//                                @Override
-//                                public void onFailure(Object reason) {
-//                                    //To change body of implemented methods use File | Settings | File Templates.
-//                                }
-//
-//                                @Override
-//                                public void onSuccess(Object result) {
-//                                    callback.onSuccess(result);
-//                                    eventBus.fireEvent(new SequenceEvent(sequence.subList(1, sequence.size()), callback));
-//                                }
-//                            }
-//                             : null;
-//                }
-//            }
-//        });
+        eventBus.addHandler(SequenceEvent.TYPE, new SequenceEventHandler() {
+            @Override
+            public void invoke(SequenceEvent event) {
+                final List sequence = event.getSequence();
+                final com.google.gwt.core.client.Callback callback = event.getCallback();
+                if (!sequence.isEmpty()) {
+                    callback.onSuccess(sequence.subList(1, sequence.size()));
+                }
+            }
+        });
 
         eventBus.addHandler(DriveInitEvent.TYPE, new DriveInitEventHandler() {
             @Override
@@ -216,28 +202,13 @@ public class SiteEntryPoint implements EntryPoint {
             }
         });
         menuAbout.getShape().click(getAboutPage());
-//        menuVideo.getShape().click(getVideoPage());
-//        menuContact.getShape().click(getContactPage());
-//        menuOrder.getShape().click(getOrderPage());
     }
 
-    private MitsouGallery bass4StringGallery, archiveGallery, finishGallery, exhibitionsGallery, ownersGallery;
+    private MitsouGallery bass4StringGallery;
 
     private void hideGallery() {
-        if (ownersGallery != null) {
-            ownersGallery.hide(true);
-        }
-        if (finishGallery != null) {
-            finishGallery.hide(true);
-        }
         if (bass4StringGallery != null) {
             bass4StringGallery.hide(true);
-        }
-        if (exhibitionsGallery != null) {
-            exhibitionsGallery.hide(true);
-        }
-        if (archiveGallery != null) {
-            archiveGallery.hide(true);
         }
     }
 
@@ -267,26 +238,6 @@ public class SiteEntryPoint implements EntryPoint {
         });
 
 
-//        clientGrid.putShapeToGrid(1, 0, images.getMenuArchive());
-//        clientGrid.putShapeToGrid(2, 0, images.getMenuExhibitions());
-//        clientGrid.putShapeToGrid(3, 0, images.getMenuEndorsers());
-//        clientGrid.putShapeToGrid(4, 0, images.getMenuOwners());
-
-//        bigMenu(images.getMenuNew(), "New guitars").flip(true);
-//        bigMenu(images.getMenuArchive(), "Archive").flip(true);
-//        bigMenu(images.getMenuExhibitions(), "Exhibitions").flip(true);
-//        bigMenu(images.getMenuEndorsers(), "Endorsers").flip(true);
-//        bigMenu(images.getMenuOwners(), "Owners").flip(true);
-
-//        if (initial) {
-//            images.getMenuArchive().click(getArchiveGalleryPage());
-//            images.getMenuExhibitions().click(getExhibitionsGalleryPage());
-//            images.getMenuNew().click(getNewGalleryPage());
-//            images.getMenuEndorsers().click(getFinishGalleryPage());
-//            images.getMenuOwners().click(getOwnersGalleryPage());
-//        }
-
-//
 //        Rect bkg = paper.rect(0, facebookFeedY, canvasWidth, 558);
 //        bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
 //        clonedLayer.add(paper.set().push(bkg));
@@ -306,7 +257,7 @@ public class SiteEntryPoint implements EntryPoint {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
-                clientBundle.getBass4StringGallery(paper, clientBundle, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+                bass4StringGallery = clientBundle.getBass4StringGallery(paper, eventBus, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
             }
         };
     }
@@ -327,12 +278,26 @@ public class SiteEntryPoint implements EntryPoint {
                         new Callback() {
                             @Override
                             public void call(Shape shape) {
-//
-//                                Shape txt = createTextLines(10, actualY + 20, 30, clientBundle.getAbout(), clientTextAttrs)
-//                                        .attr(Attrs.create().opacity(0));
-//                                clonedLayer.add((Set) txt);
-//
-//                                txt.invoke(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+
+                                clientBundle.getAbout(new com.google.gwt.core.client.Callback() {
+                                    @Override
+                                    public void onFailure(Object reason) {
+                                        String text = (String) reason;
+                                        Shape txt = createTextLines(10, actualY + 20, 30, text, clientTextAttrs)
+                                                .attr(Attrs.create().opacity(0));
+                                        clonedLayer.add((Set) txt);
+                                        txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Object result) {
+                                        String text = (String) result;
+                                        Shape txt = createTextLines(10, actualY + 20, 30, text, clientTextAttrs)
+                                                .attr(Attrs.create().opacity(0));
+                                        clonedLayer.add((Set) txt);
+                                        txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+                                    }
+                                });
                             }
                         }));
 

@@ -19,7 +19,7 @@ public class DriveBundle {
 
     private JsArray<DriveFileMeta> driveFiles;
     private Map<DriveFileMeta, List<DriveFileMeta>> hierarchy = new HashMap<DriveFileMeta, List<DriveFileMeta>>();
-    private Map<String, String> fileIds = new HashMap<String, String>();
+    private Map<String, String> fileDownloadURLs = new HashMap<String, String>();
 
 
     public RequestBuilder initHierarchy(final EventBus eventBus) {
@@ -45,7 +45,9 @@ public class DriveBundle {
                         for (DriveFileMeta parent : hierarchy.keySet()) {
                             if (parent.getId().equals(meta.getParentId())) {
                                 hierarchy.get(parent).add(meta);
-                                fileIds.put(parent.getTitle() + "/" + meta.getTitle(), meta.getId());
+                                fileDownloadURLs.put(parent.getTitle() + "/" + meta.getTitle(),
+                                        "https://docs.google.com/uc?export=download&id=" +
+                                        meta.getId());
                                 break;
                             }
                         }
@@ -64,16 +66,16 @@ public class DriveBundle {
     }
 
 
-    public String getFileId(String folderName, String fileName) {
-        return fileIds.get(folderName + "/" + fileName);
+    public String getFileDownloadURL(String folderName, String fileName) {
+        return fileDownloadURLs.get(folderName + "/" + fileName);
     }
 
-    public List<String> getFileIds(String folderName) {
+    public List<String> getFolderFileURLs(String folderName) {
         List<String> ids = new ArrayList<String>();
 
-        for (String key : fileIds.keySet()) {
+        for (String key : fileDownloadURLs.keySet()) {
             if (key.startsWith(folderName + "/")) {
-                ids.add(fileIds.get(key));
+                ids.add(fileDownloadURLs.get(key));
             }
         }
 
@@ -82,13 +84,8 @@ public class DriveBundle {
 
 
     public String getStreamURLbyName(String folder, String fileName, String mime) {
-        String fileId = getFileId(folder, fileName);
+        return getFileDownloadURL(folder, fileName);
 
-        if (!fileId.isEmpty()) {
-            return GWT.getModuleBaseURL() + "googledrive?op=stream&mime=" + mime + "&fileID=" + fileId;
-        }
-
-        return "";
     }
 
     public String getStreamURLbyId(String fileId, String mime) {

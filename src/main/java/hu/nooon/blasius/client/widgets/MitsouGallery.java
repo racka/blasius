@@ -6,7 +6,6 @@ import com.reveregroup.gwt.imagepreloader.ImageLoadEvent;
 import com.reveregroup.gwt.imagepreloader.ImageLoadHandler;
 import com.reveregroup.gwt.imagepreloader.ImagePreloader;
 import hu.nooon.blasius.client.event.SequenceEvent;
-import hu.nooon.blasius.client.resource.BlasiusBundle;
 import org.sgx.raphael4gwt.raphael.Paper;
 import org.sgx.raphael4gwt.raphael.Raphael;
 import org.sgx.raphael4gwt.raphael.Set;
@@ -23,7 +22,7 @@ import java.util.Map;
 public class MitsouGallery implements CustomLayer {
 
     private Paper paper;
-    private BlasiusBundle clientBundle;
+    private EventBus eventBus;
     private List<FadedObject> thumbnails;
     private final Set thumbnailSet;
     private Map<Integer, Shape> images;
@@ -31,10 +30,10 @@ public class MitsouGallery implements CustomLayer {
     private Shape thumbFrame;
     private int x, y, width, thumbWidth, thumbHeight;
 
-    public MitsouGallery(Paper paper, BlasiusBundle clientBundle, final int x, final int y, final int width, final int thumbWidth, int thumbHeight) {
+    public MitsouGallery(Paper paper, EventBus eventBus, final int x, final int y, final int width, final int thumbWidth, int thumbHeight) {
 
         this.paper = paper;
-        this.clientBundle = clientBundle;
+        this.eventBus = eventBus;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -46,28 +45,39 @@ public class MitsouGallery implements CustomLayer {
         this.thumbnails = new ArrayList<FadedObject>();
     }
 
-    public void addImages(final List<String> imageFileIds) {
+    public void addImages(final List<String> imageDownloadURLs) {
 
-        if (!imageFileIds.isEmpty()) {
+        if (!imageDownloadURLs.isEmpty()) {
 
-            String imageFileId = imageFileIds.get(0);
-            ImagePreloader.load(clientBundle.getStreamURLbyId(imageFileId, "image/jpg"), new ImageLoadHandler() {
+            String imageDownloadURL = imageDownloadURLs.get(0);
+
+            ImagePreloader.load(imageDownloadURL, new ImageLoadHandler() {
                 @Override
                 public void imageLoaded(ImageLoadEvent imageLoadEvent) {
 
                     addImageThumb(paper.image(imageLoadEvent.getImageUrl(), 0, 0, thumbWidth, thumbHeight));
 
-//                    int actualX = x + ((width - imageLoadEvent.getDimensions().getWidth()) / 2);
-//                    Shape image = paper.image(imageLoadEvent.getImageUrl(), 0, 0, imageLoadEvent.getDimensions().getWidth(), imageLoadEvent.getDimensions().getHeight());
-//                    image.attr(Attrs.create().x(actualX).y(y));
-//                    Shape frame = paper.rect(actualX, y, imageLoadEvent.getDimensions().getWidth(), imageLoadEvent.getDimensions().getHeight());
-//                    frame.attr(Attrs.create().stroke("black").strokeWidth(5));
-//                    Shape imageWithFrame = paper.set().push(image).push(frame);
-//                    images.put(images.size(), imageWithFrame);
-//
-//                    imageWithFrame.attr(Attrs.create().opacity(0)).hide();
-//
-//                    addImages(imageFileIds.subList(1, imageFileIds.size()));
+                    int actualX = x + ((width - imageLoadEvent.getDimensions().getWidth()) / 2);
+                    Shape image = paper.image(imageLoadEvent.getImageUrl(), 0, 0, imageLoadEvent.getDimensions().getWidth(), imageLoadEvent.getDimensions().getHeight());
+                    image.attr(Attrs.create().x(actualX).y(y));
+                    Shape frame = paper.rect(actualX, y, imageLoadEvent.getDimensions().getWidth(), imageLoadEvent.getDimensions().getHeight());
+                    frame.attr(Attrs.create().stroke("black").strokeWidth(5));
+                    Shape imageWithFrame = paper.set().push(image).push(frame);
+                    images.put(images.size(), imageWithFrame);
+
+                    imageWithFrame.attr(Attrs.create().opacity(0)).hide();
+
+                    eventBus.fireEvent(new SequenceEvent(imageDownloadURLs, new com.google.gwt.core.client.Callback() {
+                        @Override
+                        public void onFailure(Object reason) {
+                        }
+
+                        @Override
+                        public void onSuccess(Object result) {
+                            addImages((List<String>) result);
+                        }
+                    }));
+
                 }
             });
         }
@@ -85,10 +95,11 @@ public class MitsouGallery implements CustomLayer {
         this.thumbnails.add(thumbnail);
         this.thumbnailSet.push(thumb);
 
+        final int index = thumbnails.size() - 1;
         thumb.click(new MouseEventListener() {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
-                showNewShape(MitsouGallery.this.thumbnails.size() - 1);
+                showNewShape(index);
             }
         });
 
