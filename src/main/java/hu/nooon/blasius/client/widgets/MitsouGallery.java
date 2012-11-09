@@ -44,6 +44,7 @@ public class MitsouGallery implements CustomLayer {
     }
 
     public void fetchImages() {
+        isShown = true;
         addImages(imageDownloadURLs);
     }
 
@@ -69,6 +70,10 @@ public class MitsouGallery implements CustomLayer {
                     images.put(images.size(), imageWithFrame);
 
                     imageWithFrame.attr(Attrs.create().opacity(0)).hide();
+
+                    if (images.size() == 1 && isShown) {
+                        showNewShape(0);
+                    }
 
                     MitsouGallery.this.addImages(imageDownloadURLs.subList(1, imageDownloadURLs.size()));
                 }
@@ -125,7 +130,9 @@ public class MitsouGallery implements CustomLayer {
             thumbFrame.attr(Attrs.create().stroke("white").strokeWidth(3).opacity(.2));
         }
 
-        thumbnailSet.toFront();
+        if (!isShown) {
+            hide(true);
+        }
 
     }
 
@@ -166,11 +173,15 @@ public class MitsouGallery implements CustomLayer {
         return this;
     }
 
+
+    private boolean isShown = false;
+
     @Override
     public CustomLayer show(boolean animated) {
         thumbnailSet.show().toFront();
         thumbFrame.show().toFront();
         showNewShape(0);
+        isShown = true;
         return this;
     }
 
@@ -179,6 +190,7 @@ public class MitsouGallery implements CustomLayer {
         actualImage.toBack().hide();
         thumbnailSet.toBack().hide();
         thumbFrame.toBack().hide();
+        isShown = false;
         return this;
     }
 

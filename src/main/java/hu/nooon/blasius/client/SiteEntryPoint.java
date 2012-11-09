@@ -41,7 +41,7 @@ public class SiteEntryPoint implements EntryPoint {
     private static final int headerHeight = 50;
     private static final int clientHeight = tileHeight;
 
-    private static final int facebookFeedY = titleHeight + headerHeight + tileHeight + 50;
+    private static final int facebookFeedY = titleHeight + headerHeight + 50;
     private static final int canvasWidth = 5 * tileWidth;
     private static final int canvasHeight = facebookFeedY + 558;
     private static final double menuOpacity = .4;
@@ -100,18 +100,12 @@ public class SiteEntryPoint implements EntryPoint {
                 Document.get().getBody().getStyle().setBackgroundImage("url(" + clientBundle.getBackgroundURL() + ")");
 
                 initRaphael(divElement);
-
                 createTitle();
-
                 createHeader();
-
                 createClient();
-
                 homeScreen();
-
             }
         });
-
 
         try {
             clientBundle.initHierarchy(eventBus).send();
@@ -172,10 +166,10 @@ public class SiteEntryPoint implements EntryPoint {
 
         FadedObject menuHome = new FadedObject(paper.text(0, 0, "Home").attr(menuTextAttrs), menuOpacity);
         menuGrid.putShapeToGrid(0, 0, menuHome.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        FadedObject menuNews = new FadedObject(paper.text(0, 0, "News").attr(menuTextAttrs), menuOpacity);
+        menuGrid.putShapeToGrid(1, 0, menuNews.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuAbout = new FadedObject(paper.text(0, 0, "About us").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(1, 0, menuAbout.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
-        FadedObject menuVideo = new FadedObject(paper.text(0, 0, "Video").attr(menuTextAttrs), menuOpacity);
-        menuGrid.putShapeToGrid(2, 0, menuVideo.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
+        menuGrid.putShapeToGrid(2, 0, menuAbout.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuContact = new FadedObject(paper.text(0, 0, "Contact").attr(menuTextAttrs), menuOpacity);
         menuGrid.putShapeToGrid(3, 0, menuContact.getShape()).animate(Raphael.animation(Attrs.create().opacity(menuOpacity), 100, Raphael.EASING_LINEAR));
         FadedObject menuOrder = new FadedObject(paper.text(0, 0, "Order").attr(menuTextAttrs), menuOpacity);
@@ -188,32 +182,54 @@ public class SiteEntryPoint implements EntryPoint {
                 homeScreen();
             }
         });
+        menuNews.getShape().click(new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent e) {
+                clearScreen();
+                showFaceBook();
+            }
+        });
         menuAbout.getShape().click(getAboutPage());
+        menuContact.getShape().click(getContactPage());
+        menuOrder.getShape().click(getOrderPage());
     }
 
-    private MitsouGallery bass4StringGallery;
+    private MitsouGallery bass4StringGallery, bass5StringGallery;
+    private MitsouGallery endorsersGallery, exhibitionsGallery, ownersGallery;
 
     private void hideGallery() {
         if (bass4StringGallery != null) {
             bass4StringGallery.hide(true);
         }
+        if (bass5StringGallery != null) {
+            bass5StringGallery.hide(true);
+        }
+        if (endorsersGallery != null) {
+            endorsersGallery.hide(true);
+        }
+        if (exhibitionsGallery != null) {
+            exhibitionsGallery.hide(true);
+        }
+        if (ownersGallery != null) {
+            ownersGallery.hide(true);
+        }
     }
 
     private void createClient() {
-        clientGrid = new CustomGrid(0, titleHeight + headerHeight, 1, 5, tileWidth, tileHeight);
+        clientGrid = new CustomGrid(102, titleHeight + headerHeight, 2, 8, tileWidth / 2, tileHeight + 20);
     }
 
     private void homeScreen() {
 
         clearScreen();
 
-        clientBundle.getBass4String(paper, new com.google.gwt.core.client.Callback() {
+        clientBundle.getBass4StringCover(paper, new com.google.gwt.core.client.Callback() {
             @Override
             public void onFailure(Object reason) {
                 Shape shape = (Shape) reason;
                 clientGrid.putShapeToGrid(0, 0, shape);
                 bigMenu((Set) shape, "4 string basses").flip(true);
-                shape.click(get4StringBassesGalleryPage());
+                shape.click(get4StringBassesGallery());
             }
 
             @Override
@@ -224,28 +240,127 @@ public class SiteEntryPoint implements EntryPoint {
             }
         });
 
+        clientBundle.getBass5StringCover(paper, new com.google.gwt.core.client.Callback() {
+            @Override
+            public void onFailure(Object reason) {
+                Shape shape = (Shape) reason;
+                clientGrid.putShapeToGrid(4, 0, shape);
+                bigMenu((Set) shape, "5 string basses").flip(true);
+                shape.click(get5StringBassesGallery());
+            }
 
-//        Rect bkg = paper.rect(0, facebookFeedY, canvasWidth, 558);
-//        bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
-//        clonedLayer.add(paper.set().push(bkg));
+            @Override
+            public void onSuccess(Object result) {
+                Shape shape = (Shape) result;
+                clientGrid.putShapeToGrid(4, 0, shape);
+                bigMenu((Set) shape, "5 string basses").flip(true);
+            }
+        });
 
-//        Element facebookElement = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
-//        facebookElement.getStyle().setDisplay(Style.Display.BLOCK);
-//        facebookElement.getStyle().setZIndex(100);
-//        facebookElement.getStyle().setPosition(Style.Position.ABSOLUTE);
-//        facebookElement.getStyle().setTop(facebookFeedY, Style.Unit.PX);
-//        facebookElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
+        clientBundle.getEndorsersCover(paper, new com.google.gwt.core.client.Callback() {
+            @Override
+            public void onFailure(Object reason) {
+                Shape shape = (Shape) reason;
+                clientGrid.putShapeToGrid(1, 1, shape);
+                bigMenu((Set) shape, "Endorsers").flip(true);
+                shape.click(getEndorsersGallery());
+            }
 
+            @Override
+            public void onSuccess(Object result) {
+                Shape shape = (Shape) result;
+                clientGrid.putShapeToGrid(1, 1, shape);
+                bigMenu((Set) shape, "Endorsers").flip(true);
+            }
+        });
+
+        clientBundle.getExhibitionsCover(paper, new com.google.gwt.core.client.Callback() {
+            @Override
+            public void onFailure(Object reason) {
+                Shape shape = (Shape) reason;
+                clientGrid.putShapeToGrid(3, 1, shape);
+                bigMenu((Set) shape, "Exhibitions").flip(true);
+                shape.click(getExhibitionsGallery());
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+                Shape shape = (Shape) result;
+                clientGrid.putShapeToGrid(3, 1, shape);
+                bigMenu((Set) shape, "Exhibitions").flip(true);
+            }
+        });
+
+        clientBundle.getOwnersCover(paper, new com.google.gwt.core.client.Callback() {
+            @Override
+            public void onFailure(Object reason) {
+                Shape shape = (Shape) reason;
+                clientGrid.putShapeToGrid(5, 1, shape);
+                bigMenu((Set) shape, "Owners").flip(true);
+                shape.click(getOwnersGallery());
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+                Shape shape = (Shape) result;
+                clientGrid.putShapeToGrid(5, 1, shape);
+                bigMenu((Set) shape, "Owners").flip(true);
+            }
+        });
 
     }
 
-    private MouseEventListener get4StringBassesGalleryPage() {
+    private MouseEventListener get4StringBassesGallery() {
         return new MouseEventListener() {
             @Override
             public void notifyMouseEvent(NativeEvent nativeEvent) {
                 clearScreen();
                 bass4StringGallery = clientBundle.getBass4StringGallery(paper, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
                 bass4StringGallery.show(true);
+            }
+        };
+    }
+
+    private MouseEventListener get5StringBassesGallery() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+                bass5StringGallery = clientBundle.getBass5StringGallery(paper, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+                bass5StringGallery.show(true);
+            }
+        };
+    }
+
+    private MouseEventListener getEndorsersGallery() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+                endorsersGallery = clientBundle.getEndorsersGallery(paper, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+                endorsersGallery.show(true);
+            }
+        };
+    }
+
+    private MouseEventListener getExhibitionsGallery() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+                exhibitionsGallery = clientBundle.getExhibitionsGallery(paper, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+                exhibitionsGallery.show(true);
+            }
+        };
+    }
+
+    private MouseEventListener getOwnersGallery() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+                ownersGallery = clientBundle.getOwnersGallery(paper, 0, titleHeight + headerHeight, canvasWidth, thumbWidth, thumbHeight);
+                ownersGallery.show(true);
             }
         };
     }
@@ -267,7 +382,7 @@ public class SiteEntryPoint implements EntryPoint {
                             @Override
                             public void call(Shape shape) {
 
-                                clientBundle.getAbout(new com.google.gwt.core.client.Callback() {
+                                clientBundle.getAboutText(new com.google.gwt.core.client.Callback() {
                                     @Override
                                     public void onFailure(Object reason) {
                                         String text = (String) reason;
@@ -288,8 +403,89 @@ public class SiteEntryPoint implements EntryPoint {
                                 });
                             }
                         }));
+            }
+        };
+    }
+
+    private MouseEventListener getContactPage() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+
+                final int actualY = headerHeight + titleHeight;
+                Rect bkg = paper.rect(canvasWidth, actualY, canvasWidth, tileHeight * 2);
+                bkg.attr(Attrs.create().fill("black").opacity(0).strokeWidth(0));
+                clonedLayer.add(paper.set().push(bkg));
+
+                bkg.animate(Raphael.animation(Attrs.create().x(0).opacity(.7), 1000, Raphael.EASING_LINEAR,
+                        new Callback() {
+                            @Override
+                            public void call(Shape shape) {
+
+                                clientBundle.getContactText(new com.google.gwt.core.client.Callback() {
+                                    @Override
+                                    public void onFailure(Object reason) {
+                                        String text = (String) reason;
+                                        Shape txt = createTextLines(10, actualY + 20, 30, text, clientTextAttrs)
+                                                .attr(Attrs.create().opacity(0));
+                                        clonedLayer.add((Set) txt);
+                                        txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Object result) {
+                                        String text = (String) result;
+                                        Shape txt = createTextLines(10, actualY + 20, 30, text, clientTextAttrs)
+                                                .attr(Attrs.create().opacity(0));
+                                        clonedLayer.add((Set) txt);
+                                        txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+                                    }
+                                });
+                            }
+                        }));
+            }
+        };
+    }
 
 
+    private MouseEventListener getOrderPage() {
+        return new MouseEventListener() {
+            @Override
+            public void notifyMouseEvent(NativeEvent nativeEvent) {
+                clearScreen();
+
+                final int actualY = headerHeight + titleHeight;
+                Rect bkg = paper.rect(canvasWidth, actualY, canvasWidth, tileHeight * 2);
+                bkg.attr(Attrs.create().fill("black").opacity(0).strokeWidth(0));
+                clonedLayer.add(paper.set().push(bkg));
+
+                bkg.animate(Raphael.animation(Attrs.create().x(0).opacity(.7), 1000, Raphael.EASING_LINEAR,
+                        new Callback() {
+                            @Override
+                            public void call(Shape shape) {
+
+                                clientBundle.getOrderText(new com.google.gwt.core.client.Callback() {
+                                    @Override
+                                    public void onFailure(Object reason) {
+                                        String text = (String) reason;
+                                        Shape txt = createTextLines(10, actualY + 20, 30, text, clientTextAttrs)
+                                                .attr(Attrs.create().opacity(0));
+                                        clonedLayer.add((Set) txt);
+                                        txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Object result) {
+                                        String text = (String) result;
+                                        Shape txt = createTextLines(10, actualY + 20, 30, text, clientTextAttrs)
+                                                .attr(Attrs.create().opacity(0));
+                                        clonedLayer.add((Set) txt);
+                                        txt.animate(Raphael.animation(Attrs.create().opacity(1), 500, Raphael.EASING_LINEAR));
+                                    }
+                                });
+                            }
+                        }));
             }
         };
     }
@@ -355,6 +551,19 @@ public class SiteEntryPoint implements EntryPoint {
             })).toBack();
         }
         modifiedLayer.clear();
+    }
+
+    private void showFaceBook() {
+        Rect bkg = paper.rect(0, facebookFeedY, canvasWidth, 558);
+        bkg.attr(Attrs.create().fill("white").opacity(.7).strokeWidth(0));
+        clonedLayer.add(paper.set().push(bkg));
+
+        Element facebookElement = Document.get().getBody().getElementsByTagName("fb:like-box").getItem(0);
+        facebookElement.getStyle().setDisplay(Style.Display.BLOCK);
+        facebookElement.getStyle().setZIndex(100);
+        facebookElement.getStyle().setPosition(Style.Position.ABSOLUTE);
+        facebookElement.getStyle().setTop(facebookFeedY, Style.Unit.PX);
+        facebookElement.getStyle().setLeft((Window.getClientWidth() - canvasWidth) / 2, Style.Unit.PX);
     }
 
     private void hideFaceBook() {
